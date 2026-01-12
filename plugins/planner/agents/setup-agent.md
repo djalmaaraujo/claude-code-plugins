@@ -16,6 +16,10 @@ When spawned, you receive:
 
 - `project_name`: Optional name for the project (defaults to current directory name)
 - `working_directory`: The project directory to initialize
+- `existing_files`: Object indicating what already exists:
+  - `plans_dir_exists`: true/false - Whether plans/ directory exists
+  - `progress_exists`: true/false - Whether plans/PROGRESS.md exists
+  - `config_exists`: true/false - Whether plans/planner.config.json exists
 - `config`: Configuration object with:
   - `auto_commit`: true/false - Automatically commit after successful plans
   - `auto_update_claude_md`: true/false - Auto-update project CLAUDE.md when needed
@@ -29,22 +33,15 @@ When spawned, you receive:
 
 ## Instructions
 
-### Step 1: Check Existing Structure
+### Step 1: Use Existing Files Context
 
-Check what's already set up:
+Use the `existing_files` object from the prompt to determine what actions to take:
 
-```bash
-# Check for existing structure
-ls -la plans/ 2>/dev/null
-ls -la plans/PROGRESS.md 2>/dev/null
-ls -la plans/planner.config.json 2>/dev/null
-```
+- `plans_dir_exists`: If false, create the directory. If true, skip.
+- `progress_exists`: If false, create PROGRESS.md. If true, skip.
+- `config_exists`: Always write planner.config.json (create or update)
 
-Note which files exist for reporting purposes. **Do not stop** - setup is idempotent and will:
-
-- Create missing files
-- Create or preserve configuration
-- Preserve existing content
+**Important**: Do NOT check the filesystem again - trust the values provided in `existing_files`.
 
 ---
 
@@ -56,15 +53,21 @@ Note which files exist for reporting purposes. **Do not stop** - setup is idempo
 
 ---
 
-### Step 3: Create Plans Directory
+### Step 3: Create Plans Directory (if needed)
+
+**Only if `existing_files.plans_dir_exists = false`:**
 
 ```bash
 mkdir -p plans
 ```
 
+If `plans_dir_exists = true`, skip this step.
+
 ---
 
-### Step 4: Create PROGRESS.md
+### Step 4: Create PROGRESS.md (if needed)
+
+**Only if `existing_files.progress_exists = false`:**
 
 Create `plans/PROGRESS.md` with this template:
 
@@ -100,9 +103,13 @@ TABLE FORMAT:
 <!-- Add your feature plans below this line -->
 ```
 
+If `progress_exists = true`, skip this step entirely - do not modify existing PROGRESS.md.
+
 ---
 
-### Step 5: Create Configuration File
+### Step 5: Create or Update Configuration File
+
+**Always execute this step** - configuration is always written (created or updated).
 
 Create `plans/planner.config.json` with the configuration:
 
@@ -149,17 +156,17 @@ Note: You can manually remove the old "Planner Execution Configuration" section 
 
 ### Step 6: Report Success
 
-Report what was done:
+Report what was done based on `existing_files` context:
 
 ```
-✓ Planner initialized successfully!
+✓ Planner setup complete!
 
-Created/Updated:
-- plans/ [created/already exists]
-- plans/PROGRESS.md [created/already exists]
-- plans/planner.config.json [created/updated]
+Files:
+- plans/ [created | already exists - based on plans_dir_exists]
+- plans/PROGRESS.md [created | already exists - based on progress_exists]
+- plans/planner.config.json [created | updated - based on config_exists]
 
-Configuration saved:
+Configuration [saved | updated]:
 - Auto-commit: [enabled/disabled based on config]
 - Auto-update CLAUDE.md: [enabled/disabled based on config]
 - Smart Parallelism: [aggressive/conservative based on config]
@@ -167,7 +174,7 @@ Configuration saved:
 - Use Specs: [enabled/disabled based on config]
 - Spec Verbosity: [maximum inference/interactive based on config] (if uses_spec enabled)
 
-You can change these settings anytime by editing plans/planner.config.json
+Run /planner:planner-setup anytime to update these settings.
 
 Next steps:
 [If uses_spec enabled:]
@@ -187,7 +194,8 @@ Example:
 ## Rules
 
 1. **JSON config only** - configuration lives in plans/planner.config.json, not CLAUDE.md
-2. **Preserve existing files** - existing files must not be overwritten carelessly
-3. **Idempotent** - safe to run multiple times, updates config if needed
-4. **Clear reporting** - tell user exactly what was created/modified
-5. **Migration support** - show migration message if migrating from old format
+2. **Create only if missing** - only create plans/ and PROGRESS.md if they don't exist (based on existing_files)
+3. **Always update config** - planner.config.json is always written with the new configuration
+4. **Non-destructive** - never overwrite existing plans, specs, or PROGRESS.md content
+5. **Clear reporting** - tell user exactly what was created vs already existed
+6. **Migration support** - show migration message if migrating from old format

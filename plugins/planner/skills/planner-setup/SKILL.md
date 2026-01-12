@@ -11,31 +11,37 @@ You are now executing the planner-setup skill. Follow these steps immediately:
 
 ## Step 1: Check for Existing Configuration
 
-Check if configuration has already been set up:
+Check what already exists to determine defaults and what files need to be created:
 
-1. **First, check for new format**: Try to read `plans/planner.config.json`
+1. **Check for config file**: Try to read `plans/planner.config.json`
 
    - If exists and valid JSON:
-     - Parse: `auto_commit`, `auto_update_claude_md`, `smart_parallelism`, `replan_on_exec`
-     - Store as: `config_exists = true`, `migration_needed = false`
-     - Skip to Step 3 (don't ask questions)
+     - Parse all values: `auto_commit`, `auto_update_claude_md`, `smart_parallelism`, `replan_on_exec`, `uses_spec`, `spec_verbose`
+     - Store as: `config_exists = true`
+     - Store current values as `current_config` (for pre-filling questions)
 
-2. **Then, check for old format**: Try to read `.claude/CLAUDE.md`
+2. **Check for old format** (migration): Try to read `.claude/CLAUDE.md`
 
    - Search for "## Planner Execution Configuration" section
    - If found:
-     - Parse existing values for: auto_commit, auto_update_claude_md, smart_parallelism, replan_on_exec
-     - Store as: `config_exists = true`, `migration_needed = true`
-     - Skip to Step 3 (will migrate to JSON format)
-     - Note: If replan_on_exec is not found in old config, default to `false`
+     - Parse existing values
+     - Store as: `migration_needed = true`
+     - Store values as `current_config`
 
-3. **If neither found**:
-   - Set `config_exists = false`, `migration_needed = false`
-   - Continue to Step 2 (ask questions)
+3. **Check for existing files**:
+   - Check if `plans/` directory exists → store as `plans_dir_exists`
+   - Check if `plans/PROGRESS.md` exists → store as `progress_exists`
 
-## Step 2: Ask Configuration Questions (Only if config_exists = false)
+4. **If no config found**:
+   - Set `config_exists = false`, use defaults for `current_config`
 
-Use AskUserQuestion to ask the user about configuration preferences:
+**Always continue to Step 2** - configuration questions are always asked so users can update settings.
+
+## Step 2: Ask Configuration Questions
+
+Use AskUserQuestion to ask the user about configuration preferences.
+
+**Important**: If `config_exists = true`, pre-select the current values as the recommended options so users see their current settings.
 
 **Question 1: Auto-commit**
 
@@ -139,6 +145,11 @@ Task tool:
 
     migration_needed: [true/false from Step 1]
 
+    existing_files:
+      plans_dir_exists: [true/false]
+      progress_exists: [true/false]
+      config_exists: [true/false]
+
     config:
       auto_commit: [true/false]
       auto_update_claude_md: [true/false]
@@ -160,12 +171,12 @@ Planner Setup Complete
 
 Project: [project_name]
 
-Files created:
-- plans/ (directory)
-- plans/PROGRESS.md (tracking file)
-- plans/planner.config.json (configuration)
+Files:
+- plans/ (directory) [created / already exists]
+- plans/PROGRESS.md [created / already exists]
+- plans/planner.config.json [created / updated]
 
-Configuration:
+Configuration [saved / updated]:
 - Auto-commit: [enabled/disabled]
 - Auto-update CLAUDE.md: [enabled/disabled]
 - Smart Parallelism: [aggressive/conservative]
@@ -183,7 +194,7 @@ Next steps:
 1. Create plans: Tell Claude "Create plans for [feature]"
 2. Execute plans: Tell Claude "Execute all [prefix] plans"
 
-You can change configuration anytime by editing plans/planner.config.json
+Run /planner:planner-setup anytime to update configuration.
 ════════════════════════════════════════
 ```
 
@@ -195,18 +206,18 @@ You can change configuration anytime by editing plans/planner.config.json
 
 When setting up planner in a project, this skill:
 
-1. **Checks Existing Config**: Looks for configuration in `plans/planner.config.json` or `.claude/CLAUDE.md` (old format)
-2. **Migrates if Needed**: Auto-migrates from old CLAUDE.md format to new JSON format
-3. **Asks Configuration Questions**: Only if config doesn't exist (first-time setup)
-4. **Creates Directory Structure**: Sets up `plans/` directory
-5. **Creates Tracking File**: Initializes `plans/PROGRESS.md`
-6. **Saves Configuration**: Writes config to `plans/planner.config.json`
+1. **Checks Existing State**: Looks for existing config, plans directory, and PROGRESS.md
+2. **Always Asks Questions**: Configuration questions are always presented (with current values pre-selected if config exists)
+3. **Migrates if Needed**: Auto-migrates from old CLAUDE.md format to new JSON format
+4. **Creates Missing Files**: Only creates `plans/` directory and `PROGRESS.md` if they don't exist
+5. **Always Updates Config**: Writes new configuration to `plans/planner.config.json`
 
-### Safety Features
+### Key Behaviors
 
-- **Idempotent**: Safe to run multiple times without overwriting existing content
-- **Configuration Persistence**: Once set, config is not asked again
-- **Append-only**: Adds planner instructions with separators if file exists
+- **Re-runnable**: Users can run `/planner:planner-setup` anytime to update configuration
+- **Non-destructive**: Existing plans, specs, and PROGRESS.md content are preserved
+- **Config Updates**: Configuration is always updated with the user's new answers
+- **Pre-filled Defaults**: When config exists, current values are shown as the recommended options
 
 ### Configuration Options
 
@@ -286,20 +297,24 @@ Users can edit `plans/planner.config.json` directly:
 
 Simply change boolean values and save the file.
 
-### Example
+### Example: First-time Setup
 
 ```
-User: Initialize planner in this project
+User: /planner:planner-setup
 
-Step 1: Check existing config
-→ Not found in plans/planner.config.json
-→ Not found in .claude/CLAUDE.md
-→ config_exists = false, migration_needed = false
+Step 1: Check existing state
+→ plans/planner.config.json: not found
+→ plans/ directory: not found
+→ plans/PROGRESS.md: not found
+→ config_exists = false
 
 Step 2: Ask configuration questions
 → Auto-commit? Yes (Recommended)
 → Auto-update CLAUDE.md? No (Recommended)
 → Smart Parallelism? Aggressive (Recommended)
+→ Re-plan on Executing? No (Recommended)
+→ Use Specs? Yes (Recommended)
+→ Spec Verbosity? Maximum inference (Recommended)
 
 Step 3: Get project name
 → Using current directory: "my-app"
@@ -310,7 +325,36 @@ Step 4: Spawn setup agent
 → Creates plans/planner.config.json
 
 Step 5: Report results
-→ Setup complete
-→ Configuration saved
-→ Ready to create plans
+→ Setup complete, configuration saved
+```
+
+### Example: Updating Configuration
+
+```
+User: /planner:planner-setup
+
+Step 1: Check existing state
+→ plans/planner.config.json: found (auto_commit: true, uses_spec: true, ...)
+→ plans/ directory: exists
+→ plans/PROGRESS.md: exists
+→ config_exists = true
+
+Step 2: Ask configuration questions (pre-filled with current values)
+→ Auto-commit? Yes (current) → User selects "No"
+→ Auto-update CLAUDE.md? No (current) → User keeps
+→ Smart Parallelism? Aggressive (current) → User keeps
+→ Re-plan on Executing? No (current) → User keeps
+→ Use Specs? Yes (current) → User keeps
+→ Spec Verbosity? Maximum inference (current) → User selects "Interactive"
+
+Step 3: Get project name
+→ Using current directory: "my-app"
+
+Step 4: Spawn setup agent
+→ plans/ directory: already exists (skipped)
+→ plans/PROGRESS.md: already exists (skipped)
+→ plans/planner.config.json: updated with new values
+
+Step 5: Report results
+→ Configuration updated (auto_commit: false, spec_verbose: true)
 ```
