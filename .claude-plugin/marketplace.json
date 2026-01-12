@@ -1,0 +1,45 @@
+{
+  "name": "djalmaaraujo-claude-code-plugins",
+  "owner": {
+    "name": "Djalma Araujo",
+    "url": "https://github.com/djalmaaraujo"
+  },
+  "metadata": {
+    "description": "Planning, execution, and Slack integration tools for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "planner",
+      "source": "./plugins/planner",
+      "description": "Sub-agent-based plan execution system with automatic dependency resolution, parallelism, and safety checks",
+      "version": "2.0.0",
+      "author": {
+        "name": "Djalma Araujo"
+      },
+      "skills": [
+        "./skills/planner-setup",
+        "./skills/planner-create",
+        "./skills/planner-exec",
+        "./skills/planner-batch",
+        "./skills/planner-status"
+      ]
+    },
+    {
+      "name": "slack",
+      "source": "./plugins/slack",
+      "description": "Complete Slack integration for Claude Code - send messages, search users, with intelligent caching and automatic configuration validation",
+      "version": "1.0.0",
+      "author": {
+        "name": "Djalma Araujo"
+      },
+      "license": "MIT",
+      "skills": [
+        "./skills/slack-status",
+        "./skills/slack-setup",
+        "./skills/slack-search-user",
+        "./skills/slack-send-message"
+      ]
+    }
+  ]
+}

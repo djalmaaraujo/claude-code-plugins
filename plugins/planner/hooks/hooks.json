@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Plan execution completed'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

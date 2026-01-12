@@ -1,0 +1,9 @@
+{
+  "name": "slack",
+  "description": "Complete Slack integration for Claude Code - send messages, search users, with intelligent caching and automatic configuration validation",
+  "version": "1.0.0",
+  "author": {
+    "name": "Djalma Araujo"
+  },
+  "license": "MIT"
+}

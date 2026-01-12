@@ -1,0 +1,8 @@
+{
+  "name": "planner",
+  "description": "Sub-agent-based plan execution system with automatic dependency resolution, parallelism, and safety checks",
+  "version": "2.0.0",
+  "author": {
+    "name": "Djalma Araujo"
+  }
+}
