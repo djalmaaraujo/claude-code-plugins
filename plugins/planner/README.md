@@ -206,7 +206,15 @@ What you get in return:
 /planner:planner-setup
 ```
 
-This creates the `plans/` directory, `PROGRESS.md` tracking file, and asks about configuration options including whether to enable the spec workflow.
+This interactively asks 6 configuration questions:
+1. **Auto-commit** - Commit after successful plan execution?
+2. **CLAUDE.md updates** - Auto-update project documentation?
+3. **Parallelism** - Aggressive or conservative dependency handling?
+4. **Re-plan** - Re-analyze plans before execution?
+5. **Use Specs** - Enable specification workflow?
+6. **Spec Verbosity** - Maximum inference or interactive mode?
+
+Then creates the `plans/` directory, `PROGRESS.md` tracking file, and `planner.config.json`.
 
 ### 2. Create a Spec (Optional but Recommended)
 
@@ -414,12 +422,12 @@ Continue with additional steps...
 
 | Option | Description |
 |--------|-------------|
-| **auto_commit** | Automatically commit after each plan |
-| **auto_update_claude_md** | Update project CLAUDE.md with changes |
-| **smart_parallelism** | Run independent plans in parallel |
-| **replan_on_exec** | Re-analyze plans before execution |
-| **uses_spec** | Enable specification workflow |
-| **spec_verbose** | Interactive mode for spec creation (more questions)
+| **auto_commit** | Automatically commit after each successful plan execution |
+| **auto_update_claude_md** | Update project `.claude/CLAUDE.md` when code changes make docs inaccurate |
+| **smart_parallelism** | Aggressive (more parallel) vs conservative (more sequential) dependency handling |
+| **replan_on_exec** | Re-analyze and draft fresh implementation outline before executing |
+| **uses_spec** | Enable specification workflow (create specs before plans) |
+| **spec_verbose** | Interactive mode (more questions) vs maximum inference (infer from codebase) |
 
 ## Template Customization
 
