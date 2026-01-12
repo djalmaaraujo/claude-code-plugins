@@ -9,7 +9,10 @@
 
 set -e
 
-PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+# Determine plugin root dynamically (this script is in skills/slack-search-user/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 source "$PLUGIN_ROOT/lib/config.sh"
 source "$PLUGIN_ROOT/lib/slack-api.sh"
 
@@ -39,6 +42,8 @@ CONFIG_PATH="$(get_config_path)"
 
 # Step 1: Check cache using jq (efficient - doesn't load entire JSON into memory)
 echo "🔍 Searching for user '$USERNAME' in cache..." >&2
+
+# First try exact match (case-insensitive)
 USER_DATA=$(jq -r --arg username "$USERNAME" '
   .users[] |
   select(
@@ -48,6 +53,21 @@ USER_DATA=$(jq -r --arg username "$USERNAME" '
   ) |
   @json
 ' "$CONFIG_PATH" | head -1)
+
+# If no exact match, try partial match (starts with or contains)
+if [ -z "$USER_DATA" ]; then
+  echo "  No exact match, trying partial match..." >&2
+  USER_DATA=$(jq -r --arg username "$USERNAME" '
+    .users[] |
+    select(
+      (.name | ascii_downcase | startswith($username | ascii_downcase)) or
+      (.name | ascii_downcase | contains($username | ascii_downcase)) or
+      (.real_name | ascii_downcase | contains($username | ascii_downcase)) or
+      (.display_name | ascii_downcase | contains($username | ascii_downcase))
+    ) |
+    @json
+  ' "$CONFIG_PATH" | head -1)
+fi
 
 if [ -n "$USER_DATA" ]; then
   USER_ID=$(echo "$USER_DATA" | jq -r '.id')

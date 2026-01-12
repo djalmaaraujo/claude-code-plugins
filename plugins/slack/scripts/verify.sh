@@ -3,7 +3,7 @@
 # Plugin verification script
 #
 
-PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/slack"
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 
 echo "========================================"
 echo "  SLACK PLUGIN - FINAL VERIFICATION"

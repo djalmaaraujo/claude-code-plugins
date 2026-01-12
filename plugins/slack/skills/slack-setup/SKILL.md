@@ -40,7 +40,8 @@ fi
 ### Step 2: Check Current Status
 
 ```bash
-STATUS=$(~/.claude/plugins/slack/skills/slack-status/check.sh)
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+STATUS=$("$PLUGIN_ROOT/skills/slack-status/check.sh")
 echo "$STATUS"
 ```
 
@@ -113,16 +114,18 @@ This is found in the DevTools Network tab → Headers → Cookie → d= value
 Once you have all three credentials, validate and save them:
 
 ```bash
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+
 WORKSPACE="a8c.slack.com"  # from user
 TOKEN="xoxc-..."           # from user
 COOKIE="xoxd-..."          # from user
 
 # Use the shared lib to save config
-source ~/.claude/plugins/slack/lib/config.sh
+source "$PLUGIN_ROOT/lib/config.sh"
 save_config "$WORKSPACE" "$TOKEN" "$COOKIE"
 
 # Verify it works
-STATUS=$(~/.claude/plugins/slack/skills/slack-status/check.sh)
+STATUS=$("$PLUGIN_ROOT/skills/slack-status/check.sh")
 if echo "$STATUS" | grep -q "^OK"; then
   echo "✅ Slack setup complete!"
   echo "Details: $STATUS"
@@ -140,7 +143,7 @@ After successful setup, inform the user:
 ✅ Slack plugin is now configured!
 
 Your credentials have been saved to:
-~/.claude/plugins/slack/config.json
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/config.json
 
 You can now use:
 - /slack:slack-search-user - Find Slack users
@@ -192,7 +195,7 @@ chmod 600 "$PLUGIN_ROOT/config.json"
 
 Then verify with:
 ```bash
-~/.claude/plugins/slack/skills/slack-status/check.sh
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/skills/slack-status/check.sh
 ```
 
 ## Notes

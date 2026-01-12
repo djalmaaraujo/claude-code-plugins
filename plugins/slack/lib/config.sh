@@ -4,8 +4,11 @@
 # Used by all Slack skills to load centralized configuration
 #
 
+# Determine plugin root dynamically based on this script's location
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+
 get_plugin_root() {
-  echo "$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+  echo "$PLUGIN_ROOT"
 }
 
 get_config_path() {

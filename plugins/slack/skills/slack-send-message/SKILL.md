@@ -21,10 +21,13 @@ When the user asks to send a Slack message, follow these steps:
 
 ### Step 0: Verify Slack is configured
 
-ALWAYS check status first:
+ALWAYS check status first. The PLUGIN_ROOT is determined dynamically:
 
 ```bash
-STATUS_OUTPUT=$(~/.claude/plugins/slack/skills/slack-status/check.sh)
+# Determine plugin root (adjust path based on where you're running from)
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+
+STATUS_OUTPUT=$("$PLUGIN_ROOT/skills/slack-status/check.sh")
 STATUS_CODE=$(echo "$STATUS_OUTPUT" | cut -d'|' -f1)
 
 if [ "$STATUS_CODE" != "OK" ]; then
@@ -68,22 +71,23 @@ Here's the complete flow:
 ```bash
 #!/bin/bash
 
-PLUGIN_ROOT="$HOME/.claude/plugins/slack"
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 source "$PLUGIN_ROOT/lib/config.sh"
 source "$PLUGIN_ROOT/lib/slack-api.sh"
 
-USERNAME="fulano"  # extracted from @fulano
+TARGET_USER="fulano"  # extracted from @fulano
 MESSAGE="Your message here"
 
 # Load config
 load_config
 
 # Step 1: Use slack-search-user to find the user
-echo "Searching for user '$USERNAME'..."
-USER_ID=$("$PLUGIN_ROOT/skills/slack-search-user/search-user.sh" "$USERNAME" 2>&1 | tail -1)
+# The script outputs debug info to stderr and user ID to stdout
+USER_ID=$("$PLUGIN_ROOT/skills/slack-search-user/search-user.sh" "$TARGET_USER")
+SEARCH_EXIT_CODE=$?
 
-if [ $? -ne 0 ]; then
-  echo "✗ User not found: $USERNAME"
+if [ $SEARCH_EXIT_CODE -ne 0 ] || [ -z "$USER_ID" ]; then
+  echo "✗ User not found: $TARGET_USER"
   exit 1
 fi
 
@@ -126,7 +130,7 @@ When the target is a channel (starts with `#` or is a plain channel name):
 ```bash
 #!/bin/bash
 
-PLUGIN_ROOT="$HOME/.claude/plugins/slack"
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 source "$PLUGIN_ROOT/lib/config.sh"
 source "$PLUGIN_ROOT/lib/slack-api.sh"
 
@@ -204,7 +208,7 @@ An error response looks like:
 
 This skill uses the centralized Slack plugin configuration at:
 ```
-~/.claude/plugins/slack/config.json
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/config.json
 ```
 
 ## Integration

@@ -9,7 +9,10 @@
 #   ./cache-utils.sh search <pattern>   - Search users by partial name
 #   ./cache-utils.sh clear              - Clear the cache
 
-PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+# Determine plugin root dynamically (this script is in skills/slack-search-user/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 source "$PLUGIN_ROOT/lib/config.sh"
 
 CONFIG_PATH="$(get_config_path)"

@@ -4,8 +4,10 @@
 # Common functions for making Slack API calls
 #
 
-# Source config loader - use absolute path
-PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/slack"
+# Source config loader - use PLUGIN_ROOT if set, otherwise determine from this script's location
+if [ -z "$PLUGIN_ROOT" ]; then
+  PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+fi
 source "$PLUGIN_ROOT/lib/config.sh"
 
 slack_api_call() {

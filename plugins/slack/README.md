@@ -17,7 +17,7 @@ Complete Slack integration for Claude Code - send messages, search users, with i
 
 ```bash
 # The plugin is already installed at:
-~/.claude/plugins/slack/
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/
 ```
 
 ## Quick Start
@@ -47,7 +47,7 @@ Use the slash command:
 Or via bash:
 
 ```bash
-~/.claude/plugins/slack/skills/slack-search-user/search-user.sh djalma
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/skills/slack-search-user/search-user.sh djalma
 ```
 
 ### 3. Send Messages
@@ -86,7 +86,7 @@ Use the slash command:
 Validates Slack configuration and credentials. Automatically called by other skills.
 
 ```bash
-~/.claude/plugins/slack/skills/slack-status/check.sh
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/skills/slack-status/check.sh
 ```
 
 **Output:**
@@ -111,10 +111,10 @@ Search for Slack users with intelligent caching.
 
 ```bash
 # Find user
-~/.claude/plugins/slack/skills/slack-search-user/search-user.sh <username>
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/skills/slack-search-user/search-user.sh <username>
 
 # Cache utilities
-~/.claude/plugins/slack/skills/slack-search-user/cache-utils.sh <command>
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/skills/slack-search-user/cache-utils.sh <command>
 # Commands: count, list, search <pattern>, clear
 ```
 
@@ -141,7 +141,7 @@ Send messages to channels or DMs to users.
 All configuration is stored in a single file:
 
 ```
-~/.claude/plugins/slack/config.json
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/config.json
 ```
 
 **Structure:**
@@ -241,7 +241,7 @@ User searches are cached to avoid repeated API calls.
 Run the slack-status check to see what's wrong:
 
 ```bash
-~/.claude/plugins/slack/skills/slack-status/check.sh
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/skills/slack-status/check.sh
 ```
 
 ### "invalid_auth" or "token_expired"
@@ -272,13 +272,13 @@ The user might not exist or the username doesn't match:
 
 ```bash
 # Test status
-~/.claude/plugins/slack/tests/test-status.sh
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/tests/test-status.sh
 
 # Test search
-~/.claude/plugins/slack/tests/test-search.sh djalma
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/tests/test-search.sh djalma
 
 # Test send
-~/.claude/plugins/slack/tests/test-send.sh
+~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/tests/test-send.sh
 ```
 
 ### Adding New Skills
