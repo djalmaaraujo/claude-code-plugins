@@ -1,47 +1,37 @@
 ---
 name: planner-setup
-description: Initialize planner in a project by creating plans/ directory, and PROGRESS.md tracking file. Use when user wants to set up planning, initialize planner, or start using the planner system.
+description: Setup or reconfigure planner settings. ALWAYS asks configuration questions so users can update their preferences. Creates plans/ and PROGRESS.md only if they don't exist.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Bash, Glob, AskUserQuestion
 user-invocable: true
 ---
 
 # Setup Planner
 
-You are now executing the planner-setup skill. Follow these steps immediately:
+You are now executing the planner-setup skill.
 
-## Step 1: Check for Existing Configuration
+**CRITICAL**: This skill ALWAYS asks configuration questions, even if planner is already set up. This allows users to update their configuration anytime.
 
-Check what already exists to determine defaults and what files need to be created:
+Follow these steps immediately:
 
-1. **Check for config file**: Try to read `plans/planner.config.json`
+## Step 1: Check Existing State (for defaults only)
 
-   - If exists and valid JSON:
-     - Parse all values: `auto_commit`, `auto_update_claude_md`, `smart_parallelism`, `replan_on_exec`, `uses_spec`, `spec_verbose`
-     - Store as: `config_exists = true`
-     - Store current values as `current_config` (for pre-filling questions)
+Check what exists to determine default values for questions and what files need creating:
 
-2. **Check for old format** (migration): Try to read `.claude/CLAUDE.md`
+1. **Read config file**: Try to read `plans/planner.config.json`
+   - If exists: Store current values as defaults for the questions
+   - Note: `config_exists = true`
 
-   - Search for "## Planner Execution Configuration" section
-   - If found:
-     - Parse existing values
-     - Store as: `migration_needed = true`
-     - Store values as `current_config`
+2. **Check for files**:
+   - Check if `plans/` directory exists
+   - Check if `plans/PROGRESS.md` exists
 
-3. **Check for existing files**:
-   - Check if `plans/` directory exists → store as `plans_dir_exists`
-   - Check if `plans/PROGRESS.md` exists → store as `progress_exists`
+**DO NOT SKIP ANY STEPS** - proceed to Step 2 regardless of what exists.
 
-4. **If no config found**:
-   - Set `config_exists = false`, use defaults for `current_config`
+## Step 2: Ask Configuration Questions (ALWAYS)
 
-**Always continue to Step 2** - configuration questions are always asked so users can update settings.
+**YOU MUST ASK THESE QUESTIONS** - do not skip this step even if configuration already exists.
 
-## Step 2: Ask Configuration Questions
-
-Use AskUserQuestion to ask the user about configuration preferences.
-
-**Important**: If `config_exists = true`, pre-select the current values as the recommended options so users see their current settings.
+Use AskUserQuestion to ask ALL of the following questions:
 
 **Question 1: Auto-commit**
 
