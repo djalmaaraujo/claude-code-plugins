@@ -138,6 +138,31 @@ A side benefit: your plans become permanent documentation of *how* the feature w
 - **Auditing**: Clear record of what changed and why
 - **Reusability**: Similar features can reuse plan structures
 
+### Non-Opinionated: Your Workflow, Your Way
+
+The planner doesn't force you into a rigid structure. **It adapts to how you and your team already work.**
+
+Unlike verbose enterprise solutions that require you to learn their methodology, the planner gives you a simple template that you can customize entirely:
+
+```
+/planner:planner-eject-template plan
+```
+
+Once ejected, the template is yours:
+
+- **Change the structure**: Add sections your team needs, remove what you don't
+- **Match your conventions**: Use your naming patterns, your checklist items, your standards
+- **Integrate with your tools**: Add Linear issue links, custom fields, whatever fits your workflow
+- **Keep it minimal**: The default template is lean - no bloated requirements docs
+
+**The goal is simple**: plug the planner into your project and start shipping. No training required, no workflow changes, no lengthy setup processes.
+
+What you get in return:
+- **Higher quality execution**: Each plan gets Claude's full attention
+- **Better documentation**: Plans become living docs that match your style
+- **Faster iteration**: Small plans = faster feedback loops
+- **Team alignment**: Everyone follows the same template
+
 ### Dependency Graph Example
 
 ```
