@@ -9,7 +9,7 @@
 
 set -e
 
-PLUGIN_ROOT="$HOME/.claude/plugins/slack"
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 source "$PLUGIN_ROOT/lib/config.sh"
 source "$PLUGIN_ROOT/lib/slack-api.sh"
 

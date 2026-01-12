@@ -9,7 +9,7 @@
 #   ./cache-utils.sh search <pattern>   - Search users by partial name
 #   ./cache-utils.sh clear              - Clear the cache
 
-PLUGIN_ROOT="$HOME/.claude/plugins/slack"
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 source "$PLUGIN_ROOT/lib/config.sh"
 
 CONFIG_PATH="$(get_config_path)"

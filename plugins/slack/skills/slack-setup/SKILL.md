@@ -24,14 +24,27 @@ Interactive setup wizard that guides users through configuring the Slack plugin.
 
 When the user needs to set up Slack, follow these steps:
 
-### Step 1: Check Current Status
+### Step 1: Initialize Config File
+
+First, ensure the config file exists by copying from the template:
+
+```bash
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
+if [ ! -f "$PLUGIN_ROOT/config.json" ]; then
+  cp "$PLUGIN_ROOT/example.config.json" "$PLUGIN_ROOT/config.json"
+  chmod 600 "$PLUGIN_ROOT/config.json"
+  echo "Created config.json from template"
+fi
+```
+
+### Step 2: Check Current Status
 
 ```bash
 STATUS=$(~/.claude/plugins/slack/skills/slack-status/check.sh)
 echo "$STATUS"
 ```
 
-### Step 2: Guide User to Get Credentials
+### Step 3: Guide User to Get Credentials
 
 Explain to the user that you need 3 pieces of information from their Slack browser session:
 
@@ -39,7 +52,7 @@ Explain to the user that you need 3 pieces of information from their Slack brows
 2. **Token** (starts with `xoxc-`)
 3. **Cookie** (starts with `xoxd-`)
 
-### Step 3: Provide Step-by-Step Instructions
+### Step 4: Provide Step-by-Step Instructions
 
 **Tell the user:**
 
@@ -72,7 +85,7 @@ Explain to the user that you need 3 pieces of information from their Slack brows
    → workspace: Your workspace domain (e.g., "a8c.slack.com")
 ```
 
-### Step 4: Use AskUserQuestion to Collect Credentials
+### Step 5: Use AskUserQuestion to Collect Credentials
 
 Use the `AskUserQuestion` tool to collect the three pieces of information:
 
@@ -95,7 +108,7 @@ This is found in the DevTools Network tab → Form Data → token field
 This is found in the DevTools Network tab → Headers → Cookie → d= value
 ```
 
-### Step 5: Validate and Save
+### Step 6: Validate and Save
 
 Once you have all three credentials, validate and save them:
 
@@ -119,7 +132,7 @@ else
 fi
 ```
 
-### Step 6: Confirm Success
+### Step 7: Confirm Success
 
 After successful setup, inform the user:
 
@@ -167,16 +180,14 @@ Your credentials are stored securely and only accessible to you.
 If the user prefers, they can create the config file manually:
 
 ```bash
-cat > ~/.claude/plugins/slack/config.json << 'EOF'
-{
-  "workspace": "a8c.slack.com",
-  "token": "xoxc-YOUR-TOKEN-HERE",
-  "cookie": "xoxd-YOUR-COOKIE-HERE",
-  "users": []
-}
-EOF
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 
-chmod 600 ~/.claude/plugins/slack/config.json
+# Copy template to config
+cp "$PLUGIN_ROOT/example.config.json" "$PLUGIN_ROOT/config.json"
+chmod 600 "$PLUGIN_ROOT/config.json"
+
+# Edit the config file with your credentials
+# Replace the placeholder values with your actual workspace, token, and cookie
 ```
 
 Then verify with:

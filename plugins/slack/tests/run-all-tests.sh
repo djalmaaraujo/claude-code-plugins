@@ -5,7 +5,7 @@
 
 set -e
 
-PLUGIN_ROOT="$HOME/.claude/plugins/slack"
+PLUGIN_ROOT="$HOME/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack"
 TESTS_DIR="$PLUGIN_ROOT/tests"
 
 echo "======================================"

@@ -1,0 +1,6 @@
+{
+  "workspace": "your-workspace.slack.com",
+  "token": "xoxc-YOUR-TOKEN-HERE",
+  "cookie": "xoxd-YOUR-COOKIE-HERE",
+  "users": []
+}

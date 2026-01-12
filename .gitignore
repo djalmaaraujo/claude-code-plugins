@@ -1,0 +1,5 @@
+# Slack plugin credentials
+plugins/slack/config.json
+
+# macOS
+.DS_Store
