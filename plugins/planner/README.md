@@ -1,15 +1,17 @@
 # Planner Plugin for Claude Code
 
-Sub-agent-based plan execution system with automatic dependency resolution, parallelism, and safety checks.
+Sub-agent-based plan execution system with specification workflow, automatic dependency resolution, parallelism, and safety checks.
 
 ## Features
 
+- ✅ **Specification workflow** - Create detailed specs before generating plans
 - ✅ **Plan creation** - Break down complex features into manageable plans
 - ✅ **Dependency resolution** - Automatic ordering based on plan dependencies
 - ✅ **Parallel execution** - Run independent plans simultaneously
 - ✅ **Progress tracking** - PROGRESS.md tracks all plan statuses
 - ✅ **Safety checks** - Validates dependencies before execution
 - ✅ **Configuration options** - Auto-commit, CLAUDE.md updates, and more
+- ✅ **Linear integration** - Sync specs and plans with Linear projects
 
 ## Methodology
 
@@ -204,46 +206,133 @@ What you get in return:
 /planner:planner-setup
 ```
 
-This creates the `plans/` directory and `PROGRESS.md` tracking file.
+This creates the `plans/` directory, `PROGRESS.md` tracking file, and asks about configuration options including whether to enable the spec workflow.
 
-### 2. Create Plans
+### 2. Create a Spec (Optional but Recommended)
+
+```
+/planner:spec-create auth "User authentication with JWT tokens"
+```
+
+This creates a comprehensive specification file (`plans/auth-spec.md`) with:
+- Purpose, goals, and scope
+- Functional and non-functional requirements
+- Technical design and data models
+- Implementation logistics
+
+The spec-creator agent deeply analyzes your codebase to infer context automatically.
+
+### 3. Generate Plans from Spec
+
+```
+/planner:spec-plans-sync auth
+```
+
+This reads the spec and generates plan files with proper dependencies. It also:
+- Marks deprecated plans if the spec changed
+- Updates the spec's Milestones section with the plan list
+
+### 4. Or Create Plans Directly
 
 ```
 /planner:planner-create Add user authentication feature
 ```
 
-This breaks down the feature into multiple plan files with proper dependencies.
+This breaks down the feature into multiple plan files with proper dependencies (skipping the spec step).
 
-### 3. Check Status
+### 5. Check Status
 
 ```
 /planner:planner-status
 ```
 
-Shows progress bar, completed plans, in-progress plans, and suggested next actions.
+Shows specs (DRAFT/ACTIVE/DEPRECATED), progress bar, completed plans, in-progress plans, and suggested next actions.
 
-### 4. Execute Plans
+### 6. Execute Plans
 
 **Single plan:**
 ```
-/planner:planner-exec plans/001-setup-database.md
+/planner:planner-exec plans/auth-001-setup.md
 ```
 
 **All plans (with dependency resolution):**
 ```
-/planner:planner-batch
+/planner:planner-batch --prefix=auth
 ```
 
+## Specification Workflow
+
+Specs are optional but provide significant benefits for complex features.
+
+### Why Use Specs?
+
+| Without Spec | With Spec |
+|--------------|-----------|
+| Jump straight to implementation | Document requirements first |
+| Easy to miss edge cases | Comprehensive coverage |
+| Hard to review before coding | Review spec before any code |
+| Plans may drift from intent | Plans always align with spec |
+| No central reference | Single source of truth |
+
+### Spec Lifecycle
+
+```
+DRAFT ──────▶ ACTIVE ──────▶ DEPRECATED
+  │              │               │
+  │              │               │
+  ▼              ▼               ▼
+Review &      Generate        Superseded
+ Refine        Plans          by new spec
+```
+
+### Spec File Structure
+
+Specs follow a comprehensive 7-section template:
+
+1. **Front Matter** - Title, version, author, revision history
+2. **Introduction & Overview** - Purpose, goals, scope, audience
+3. **Functional Requirements** - User stories, features, use cases
+4. **Non-Functional Requirements** - Performance, security, scalability
+5. **Design & Technical Details** - Architecture, APIs, data models
+6. **Implementation & Logistics** - Assumptions, milestones, deployment
+7. **Appendix** - Supporting documents, research
+
+### Spec Commands
+
+| Command | Description |
+|---------|-------------|
+| `/planner:spec-create [prefix] "[description]"` | Create a new spec |
+| `/planner:spec-plans-sync [prefix]` | Generate/sync plans from spec |
+| `/planner:planner-eject-template spec` | Export spec template for customization |
+
+### Maximum Inference Mode
+
+By default (`spec_verbose: false`), the spec-creator agent:
+- Deeply analyzes your codebase, README, and existing patterns
+- Infers everything possible without asking questions
+- Only prompts when truly ambiguous
+
+Enable `spec_verbose: true` in config for more interactive spec creation.
+
 ## Available Slash Commands
+
+### Spec Commands
+
+| Command | Description |
+|---------|-------------|
+| `/planner:spec-create` | Create a specification file |
+| `/planner:spec-plans-sync` | Generate/sync plans from a spec |
+
+### Plan Commands
 
 | Command | Description |
 |---------|-------------|
 | `/planner:planner-setup` | Initialize planner in a project |
 | `/planner:planner-create` | Create plan files for a feature |
-| `/planner:planner-status` | Show overview of all plans |
+| `/planner:planner-status` | Show overview of specs and plans |
 | `/planner:planner-exec` | Execute a single plan file |
 | `/planner:planner-batch` | Execute multiple plans with dependency resolution |
-| `/planner:planner-eject-template` | Export plan template for customization |
+| `/planner:planner-eject-template` | Export plan or spec template for customization |
 
 ## Directory Structure
 
@@ -254,8 +343,9 @@ project/
 ├── plans/
 │   ├── PROGRESS.md           # Status tracking
 │   ├── planner.config.json   # Configuration
-│   ├── 001-first-plan.md     # Plan files
-│   ├── 002-second-plan.md
+│   ├── auth-spec.md          # Spec file (if using specs)
+│   ├── auth-001-setup.md     # Plan files
+│   ├── auth-002-models.md
 │   └── ...
 ```
 
@@ -312,29 +402,48 @@ Continue with additional steps...
 
 ```json
 {
-  "auto_commit": false,
+  "version": "2.0.0",
+  "auto_commit": true,
   "auto_update_claude_md": false,
-  "smart_parallelism": true
+  "smart_parallelism": true,
+  "replan_on_exec": false,
+  "uses_spec": true,
+  "spec_verbose": false
 }
 ```
 
-- **auto_commit**: Automatically commit after each plan
-- **auto_update_claude_md**: Update project CLAUDE.md with changes
-- **smart_parallelism**: Run independent plans in parallel
+| Option | Description |
+|--------|-------------|
+| **auto_commit** | Automatically commit after each plan |
+| **auto_update_claude_md** | Update project CLAUDE.md with changes |
+| **smart_parallelism** | Run independent plans in parallel |
+| **replan_on_exec** | Re-analyze plans before execution |
+| **uses_spec** | Enable specification workflow |
+| **spec_verbose** | Interactive mode for spec creation (more questions)
 
 ## Template Customization
 
-Customize how plans are generated by ejecting the default template:
+Customize how plans or specs are generated by ejecting the default templates:
 
+**For plans:**
 ```
 /planner:planner-eject-template plan
 ```
 
-This creates:
-- `plans/task.TEMPLATE.md` - Main plan template with `{{PLACEHOLDER}}` syntax
+Creates:
+- `plans/task.TEMPLATE.md` - Plan template with `{{PLACEHOLDER}}` syntax
 - `plans/standards/` - Convention files referenced by plans
 
-The template uses `{{PLACEHOLDER}}` syntax that the plan-creator agent replaces with actual content. Edit the ejected template to match your project's conventions.
+**For specs:**
+```
+/planner:planner-eject-template spec
+```
+
+Creates:
+- `plans/spec.TEMPLATE.md` - Spec template with 7 comprehensive sections
+- `plans/standards/` - Convention files (if not already created)
+
+Templates use `{{PLACEHOLDER}}` syntax that the creator agents replace with actual content. Edit ejected templates to match your project's conventions.
 
 ### Placeholder Reference
 
