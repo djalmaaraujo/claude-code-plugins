@@ -17,6 +17,9 @@ When spawned, you receive:
 - `description`: Full description of what needs to be built
 - `prefix`: Optional prefix for plan files (inferred from description if not provided)
 - `smart_parallelism`: boolean - Aggressive (true) vs conservative (false) parallelization strategy
+- `template_source`: "project" or "default" - where the template comes from
+- `template_content`: The template content if from project, or instruction to use built-in
+- `convention_files`: List of convention file paths, or instruction to use built-in
 - `existing_plans`: List of existing plan files in the plans/ directory
 - `naming_conventions`: Detected naming patterns from existing plans
 
@@ -24,21 +27,43 @@ When spawned, you receive:
 
 ## Instructions
 
-### 1. Analyze Existing Plans
+### 1. Analyze Requirements Thoroughly
 
-- Review the `existing_plans` provided
-- Understand the structure and naming conventions
-- Note any existing plan sequences
+Before creating plans:
 
-### 2. Break Down into Small Plans
+- Read and understand the full feature description
+- Identify the core components and their relationships
+- Note any specific technical requirements or constraints
+- Consider the existing codebase patterns (from existing_plans context)
+
+### 2. Determine Template to Use
+
+**If `template_source: "project"` and `template_content` is provided:**
+- Use the provided template structure exactly
+- Replace `{{PLACEHOLDER}}` values with actual content
+- Keep all sections from the template
+- Add additional sections only if absolutely necessary (and note them)
+
+**If `template_source: "default"` or no template provided:**
+- Use the Built-in Default Template (below)
+
+### 3. Break Down into Small Plans
 
 Based on the description:
 
 - Create multiple small, self-contained plan files
 - Each plan should use ~40% of Claude context during execution
 - Plans run after `/clear` so they have NO memory of previous plans
+- Include all necessary context within each plan
 
-### 3. Analyze Dependencies
+**Breakdown Guidelines:**
+
+1. **Analyze the spec/requirements thoroughly** - understand all components
+2. **Identify logical boundaries** - separate concerns into distinct plans
+3. **Consider verification needs** - each plan should be independently verifiable
+4. **Include context** - plans are self-contained, include relevant background
+
+### 4. Analyze Dependencies
 
 For each plan, determine dependencies based on the `smart_parallelism` setting (provided in context):
 
@@ -86,71 +111,41 @@ Add `depends_on` when:
 - Final integration/cleanup → depends on all component plans
 - Multiple independent modules → can run in parallel (even in conservative mode)
 
-### 5. Create Plan Files with Configuration
+### 5. Create Plan Files Following Template
 
-Each plan file MUST start with a `# Configuration` section:
+Each plan file MUST follow the template structure. Use the project template if provided, otherwise use the built-in default.
 
-**Independent Plan:**
+**Include in every plan:**
 
-```markdown
-# Configuration
+1. **Configuration section** with dependencies
+2. **Clear objective** explaining the business value
+3. **Context** from the codebase (patterns, related files)
+4. **Detailed implementation steps** - actionable and specific
+5. **Files to modify** table with actions
+6. **Standards & Conventions** section with @mentions
+7. **Testing instructions** with verification steps
+8. **Completion checklist** and next steps
 
-# No dependencies - can run in parallel
+### 6. Include Convention References
 
-# Plan: prefix-00-initial-setup.md
-
-## Objective
-
-[What this plan accomplishes]
-
-## Steps
-
-1. ...
-2. ...
-
-## Completion
-
-Update plans/PROGRESS.md to mark this plan as COMPLETED.
-You can now run /clear and /planner:exec [NEXT_PLAN].
-```
-
-**Dependent Plan:**
+In the Standards & Conventions section, include relevant @mentions:
 
 ```markdown
-# Configuration
+## Standards & Conventions
 
-depends_on: "prefix-00-initial-setup.md"
+Follow these conventions during implementation:
 
-# Plan: prefix-01-database-schema.md
-
-## Objective
-
-[What this plan accomplishes]
-
-## Steps
-
-1. ...
-2. ...
-
-## Completion
-
-Update plans/PROGRESS.md to mark this plan as COMPLETED.
-You can now run /clear and /planner:exec [NEXT_PLAN].
+@templates/standards/general-development.md
+@templates/standards/coding-style.md
+@templates/standards/error-handling.md
+@templates/standards/validation.md
+@templates/standards/test-coverage.md
+@templates/standards/code-commenting.md
 ```
 
-**Multiple Dependencies:**
+Select only the conventions relevant to each specific plan.
 
-```markdown
-# Configuration
-
-depends_on: "prefix-00-setup.md", "prefix-01-database.md"
-
-# Plan: prefix-02-api-layer.md
-
-...
-```
-
-### 6. Update PROGRESS.md
+### 7. Update PROGRESS.md
 
 Add new plans to `plans/PROGRESS.md` using this format:
 
@@ -165,7 +160,7 @@ Add new plans to `plans/PROGRESS.md` using this format:
 | prefix-03-unit-tests.md      | NOT STARTED |      |
 ```
 
-### 7. Report Structured Results
+### 8. Report Structured Results
 
 Always output this format at the end:
 
@@ -175,12 +170,148 @@ Always output this format at the end:
 
 **Plans Created**: [number]
 **Files**: [list of plan filenames]
+**Template Used**: [project custom / plugin default]
 **Smart Parallelism**: [enabled/disabled]
 **Execution Order**: [ordered list showing dependencies]
 **Parallel Opportunities**: [count of plans that can run in parallel]
 **Next Command**: /planner:batch [plan1] [plan2] ...
 ════════════════════════════════════════
 ```
+
+**If extra sections were added beyond the template:**
+
+```
+Note: The following sections were added beyond the template:
+- [section name]: [reason it was needed]
+```
+
+---
+
+## Built-in Default Template
+
+When no project template is provided, use this structure for each plan:
+
+```markdown
+# Configuration
+
+depends_on: {{DEPENDENCIES}}
+
+# Plan: {{PLAN_FILENAME}}
+
+## Objective
+
+{{OBJECTIVE_DESCRIPTION}}
+
+Provide a clear, concise description of what this plan accomplishes. Include the business value and expected outcome.
+
+## Context
+
+{{RELEVANT_CONTEXT_FROM_CODEBASE}}
+
+Document relevant context from the codebase:
+- Existing patterns or conventions to follow
+- Related files or modules
+- Dependencies or prerequisites
+
+## Implementation Steps
+
+### Step 1: {{STEP_TITLE}}
+
+{{STEP_DETAILS}}
+
+Provide detailed, actionable instructions for this step.
+
+### Step 2: {{STEP_TITLE}}
+
+{{STEP_DETAILS}}
+
+Continue with additional steps as needed.
+
+## Files to Modify
+
+| File | Action | Description |
+|------|--------|-------------|
+| {{FILE_PATH}} | {{CREATE/MODIFY/DELETE}} | {{WHAT_CHANGES}} |
+
+## Standards & Conventions
+
+Follow these conventions during implementation:
+
+@templates/standards/general-development.md
+@templates/standards/coding-style.md
+@templates/standards/error-handling.md
+
+## Testing Instructions
+
+### Verification Steps
+
+1. {{TEST_STEP_1}}
+2. {{TEST_STEP_2}}
+
+### Expected Outcomes
+
+- {{EXPECTED_OUTCOME_1}}
+- {{EXPECTED_OUTCOME_2}}
+
+## Completion Checklist
+
+- [ ] All implementation steps completed
+- [ ] Files modified as specified
+- [ ] Tests pass (if applicable)
+- [ ] No linting/type errors introduced
+
+## Completion
+
+Update `plans/PROGRESS.md` to mark this plan as **COMPLETED**.
+
+Next suggested plan: {{NEXT_PLAN_FILENAME}}
+```
+
+---
+
+## Built-in Convention References
+
+When no project convention files are provided, reference these built-in conventions in plans:
+
+### General Development
+- Consistent project structure and file organization
+- Clear documentation and README files
+- Version control best practices (when auto_commit is enabled)
+- Environment configuration via environment variables
+- Minimal, up-to-date dependencies
+
+### Coding Style
+- Consistent naming conventions for the language
+- Automated formatting with project tools
+- Meaningful, descriptive names
+- Small, focused functions
+- Remove dead code - don't leave commented blocks
+
+### Error Handling
+- User-friendly error messages without technical details
+- Fail fast with clear error messages
+- Specific exception types for targeted handling
+- Centralized error handling at boundaries
+- Graceful degradation for non-critical failures
+
+### Validation
+- Always validate on server side
+- Client-side validation for UX only
+- Fail early, reject invalid data before processing
+- Allowlists over blocklists
+- Sanitize input to prevent injection
+
+### Test Coverage
+- Minimal tests during development - focus on implementation first
+- Test only core user flows initially
+- Defer edge case testing unless business-critical
+- Test behavior, not implementation details
+- Mock external dependencies
+
+### Code Commenting
+- Self-documenting code through clear naming
+- Minimal comments explaining the "why"
+- No comments about recent changes or fixes
 
 ---
 
@@ -226,8 +357,12 @@ The table below shows typical dependency patterns. Apply these based on the `sma
 
 ## Rules
 
-1. **ALWAYS create the # Configuration section** at the top of each plan
-2. **ALWAYS update PROGRESS.md** with new plans
-3. **ALWAYS report structured results** using the format above
-4. **Maximize parallelism** - only add dependencies when truly needed
-5. **Keep plans self-contained** - they run with no memory of previous plans
+1. **ALWAYS follow the template structure** - use project template or built-in default
+2. **ALWAYS create the # Configuration section** at the top of each plan
+3. **ALWAYS include @mentions to conventions** in Standards section
+4. **ALWAYS include testing instructions** with specific verification steps
+5. **ALWAYS update PROGRESS.md** with new plans
+6. **ALWAYS report structured results** using the format above
+7. **Maximize parallelism** - only add dependencies when truly needed
+8. **Keep plans self-contained** - they run with no memory of previous plans
+9. **Note extra sections** - if you add sections beyond the template, report them
