@@ -33,6 +33,16 @@ claude plugins:install djalmaaraujo-claude-code-plugins:slack
 claude plugins:install djalmaaraujo-claude-code-plugins:*
 ```
 
+## Architecture
+
+Each plugin uses a **command → skill** pattern:
+- **Commands** (`/plugin:command`): Thin wrappers users invoke directly
+- **Skills**: Core logic that commands delegate to
+
+This allows commands to appear in the slash menu while keeping logic in reusable skills.
+
+---
+
 ## Planner Plugin
 
 Break down complex features into manageable plans with automatic dependency resolution and parallel execution.
