@@ -1,6 +1,7 @@
 {
   "version": "2.0.0",
   "auto_commit": true,
+  "auto_commit_standard": "conventional_commits",
   "auto_update_claude_md": false,
   "smart_parallelism": true,
   "replan_on_exec": false,

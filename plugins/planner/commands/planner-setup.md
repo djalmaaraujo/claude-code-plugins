@@ -49,6 +49,30 @@ allowed-tools: AskUserQuestion, Bash, Write
 }
 ```
 
+## Step 1.5: If auto_commit is "Yes", ask commit style
+
+Only ask this if user selected "Yes" for Auto-commit in Step 1:
+
+```json
+{
+  "questions": [
+    {
+      "header": "Commit style",
+      "question": "Which commit message standard should be used?",
+      "multiSelect": false,
+      "options": [
+        {"label": "Conventional Commits (Recommended)", "description": "Structured format: type(scope): description (conventionalcommits.org)"},
+        {"label": "No specific standard", "description": "Simple descriptive commit messages"}
+      ]
+    }
+  ]
+}
+```
+
+Map answers:
+- "Conventional Commits" → `auto_commit_standard: "conventional_commits"`
+- "No specific standard" → `auto_commit_standard: "no_standard"`
+
 ## Step 2: Ask remaining 2 questions
 
 ```json
@@ -90,6 +114,7 @@ Write `plans/planner.config.json`:
 {
   "version": "2.0.0",
   "auto_commit": [true if "Yes", false if "No"],
+  "auto_commit_standard": [if auto_commit is true: "conventional_commits" or "no_standard" based on Step 1.5 answer, else null],
   "auto_update_claude_md": [true if "Yes", false if "No"],
   "smart_parallelism": [true if "Aggressive", false if "Conservative"],
   "replan_on_exec": [true if "Yes", false if "No"],

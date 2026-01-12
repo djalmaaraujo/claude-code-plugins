@@ -18,6 +18,7 @@ When spawned, you receive:
 - `skip_questions`: Whether config questions were already asked (should be true)
 - `config`: Configuration options
   - `auto_commit`: boolean - Create git commit after each successful plan
+  - `auto_commit_standard`: string - Commit message format ("conventional_commits" or "no_standard")
   - `auto_update_claude_md`: boolean - Update project CLAUDE.md if changes make it inaccurate
   - `replan_on_exec`: boolean - Re-analyze and draft fresh implementation before executing
 
@@ -116,6 +117,7 @@ Task tool parameters:
 
     config:
       auto_commit: [true/false from config]
+      auto_commit_standard: [value from config or "no_standard"]
       auto_update_claude_md: [true/false from config]
       replan_on_exec: [true/false from config]
 

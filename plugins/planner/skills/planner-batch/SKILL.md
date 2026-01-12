@@ -16,12 +16,13 @@ Read the user's project configuration from `plans/planner.config.json`:
 1. **Read configuration file**: Read `plans/planner.config.json`
 
    - If successful and valid JSON:
-     - Parse: `auto_commit`, `auto_update_claude_md`, `replan_on_exec`
+     - Parse: `auto_commit`, `auto_commit_standard`, `auto_update_claude_md`, `replan_on_exec`
      - Build config object and proceed to Step 2
 
 2. **Use defaults**: If file not found or invalid:
    ```
    config.auto_commit = false
+   config.auto_commit_standard = "no_standard"
    config.auto_update_claude_md = false
    config.replan_on_exec = false
    ```
@@ -58,6 +59,7 @@ Task tool:
 
     config:
       auto_commit: [true/false from Step 1]
+      auto_commit_standard: [value from Step 1 or "no_standard"]
       auto_update_claude_md: [true/false from Step 1]
       replan_on_exec: [true/false from Step 1]
 
@@ -112,11 +114,12 @@ When batch executing plans, this skill:
 
 Configuration is read from `plans/planner.config.json` (set during planner-setup) and applied to ALL plans:
 
-| Option                    | Description                                                         |
-| ------------------------- | ------------------------------------------------------------------- |
-| **Auto-commit**           | Create a git commit after each successful plan                      |
-| **Auto-update CLAUDE.md** | Update project CLAUDE.md after each plan if needed                  |
-| **Re-plan on Executing**  | Re-analyze and draft fresh implementation before executing (slower) |
+| Option                     | Description                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| **Auto-commit**            | Create a git commit after each successful plan                                  |
+| **Auto-commit standard**   | Commit message format: "conventional_commits" or "no_standard"                  |
+| **Auto-update CLAUDE.md**  | Update project CLAUDE.md after each plan if needed                              |
+| **Re-plan on Executing**   | Re-analyze and draft fresh implementation before executing (slower)             |
 
 **Note:** Configuration is set once during setup and stored in planner.config.json. Users can edit planner.config.json to change settings.
 

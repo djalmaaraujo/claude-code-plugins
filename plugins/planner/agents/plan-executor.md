@@ -20,6 +20,7 @@ When spawned, you receive:
 - `skip_questions`: Whether config questions were already asked (should be true)
 - `config`: Configuration options
   - `auto_commit`: boolean - Create git commit after success
+  - `auto_commit_standard`: string - Commit message format ("conventional_commits" or "no_standard")
   - `auto_update_claude_md`: boolean - Update project CLAUDE.md if changes make it inaccurate
   - `replan_on_exec`: boolean - Re-analyze and draft fresh implementation before executing
 - `additional_instructions`: Any extra instructions from the user
@@ -172,10 +173,19 @@ If the plan execution was successful, process the config options in order:
 
 #### If `auto_commit` is true:
 
-- Stage all modified files using `git add`
-- Create a commit with a descriptive message summarizing the plan execution
-- Commit message format: `feat(planner): Complete [plan_name] - [brief summary]`
-- Do NOT push to remote (leave that to the user)
+Follow the commit instructions in @skills/planner-commit/SKILL.md with:
+
+- `plan_name`: The current plan filename
+- `summary`: Brief summary of what was accomplished
+- `files_modified`: List of files changed during execution
+- `auto_commit_standard`: From config (default to "no_standard" if not provided)
+
+The planner-commit skill will:
+
+- Determine the appropriate commit message format based on `auto_commit_standard`
+- Use Conventional Commits format if `conventional_commits` is set
+- Use simple format if `no_standard` is set
+- Stage and commit changes (but NOT push to remote)
 
 ### 3. Report Structured Results
 
@@ -207,4 +217,10 @@ Always output this format at the end:
 6. **Re-plan only if enabled** - only draft your own outline if `replan_on_exec` is true in config
 7. **Handle errors gracefully** - mark as FAILED, report what went wrong
 8. **Process config options only on SUCCESS** - skip config actions if plan failed
-9. **Config action order**: auto_update_claude_md → update_readme → auto_commit
+9. **Config action order**: auto_update_claude_md → auto_commit (using planner-commit skill)
+
+## References
+
+@../planner-commit/SKILL.md
+@../planner-exec/SKILL.md
+@../planner-batch/SKILL.md

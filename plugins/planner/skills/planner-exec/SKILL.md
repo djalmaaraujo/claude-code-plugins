@@ -71,12 +71,13 @@ Read the user's project configuration from `plans/planner.config.json`:
 1. **Read configuration file**: Read `plans/planner.config.json`
 
    - If successful and valid JSON:
-     - Parse: `auto_commit`, `auto_update_claude_md`, `replan_on_exec`
+     - Parse: `auto_commit`, `auto_commit_standard`, `auto_update_claude_md`, `replan_on_exec`
      - Build config object and proceed to Step 5
 
 2. **Use defaults**: If file not found or invalid:
    ```
    config.auto_commit = false
+   config.auto_commit_standard = "no_standard"
    config.auto_update_claude_md = false
    config.replan_on_exec = false
    ```
@@ -99,6 +100,7 @@ Task tool:
 
     config:
       auto_commit: [true/false from Step 4]
+      auto_commit_standard: [value from Step 4 or "no_standard"]
       auto_update_claude_md: [true/false from Step 4]
       replan_on_exec: [true/false from Step 4]
 
@@ -151,11 +153,12 @@ When executing a single plan, this skill:
 
 Configuration is read from `plans/planner.config.json` (set during planner-setup):
 
-| Option                    | Description                                                         |
-| ------------------------- | ------------------------------------------------------------------- |
-| **Auto-commit**           | Create a git commit after successful execution                      |
-| **Auto-update CLAUDE.md** | Analyze and update project CLAUDE.md if changes made it inaccurate  |
-| **Re-plan on Executing**  | Re-analyze and draft fresh implementation before executing (slower) |
+| Option                     | Description                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| **Auto-commit**            | Create a git commit after successful execution                                  |
+| **Auto-commit standard**   | Commit message format: "conventional_commits" or "no_standard"                  |
+| **Auto-update CLAUDE.md**  | Analyze and update project CLAUDE.md if changes made it inaccurate              |
+| **Re-plan on Executing**   | Re-analyze and draft fresh implementation before executing (slower)             |
 
 These options are only applied if execution succeeds. Failed plans skip configuration actions.
 
@@ -170,8 +173,9 @@ Actions are applied in this order:
    - Update if needed
 
 2. **Auto-commit** (if enabled):
-   - Stage all modified files: `git add .`
-   - Create commit: `git commit -m "feat(planner): Complete [plan_name] - [summary]"`
+   - Uses the planner-commit skill (@skills/planner-commit/SKILL.md)
+   - If `auto_commit_standard` is `"conventional_commits"`: Uses Conventional Commits format
+   - If `auto_commit_standard` is `"no_standard"`: Uses simple format `feat(planner): Complete [plan_name] - [summary]`
    - DO NOT push (user does that)
 
 ### PROGRESS.md Updates
