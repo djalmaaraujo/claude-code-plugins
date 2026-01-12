@@ -85,12 +85,38 @@ options:
     description: "Enable for fine-grained executions (slows the execution)"
 ```
 
+**Question 5: Use Specs**
+
+```
+header: "Specs"
+question: "Would you like to use specification files before creating plans?"
+options:
+  - label: "Yes (Recommended)"
+    description: "Create detailed specs first, then generate plans from specs"
+  - label: "No"
+    description: "Create plans directly without spec files"
+```
+
+**Question 6: Spec Verbosity** (Only ask if uses_spec = true)
+
+```
+header: "Verbosity"
+question: "How interactive should spec creation be?"
+options:
+  - label: "Maximum inference (Recommended)"
+    description: "Infer everything possible from codebase, minimal questions"
+  - label: "Interactive"
+    description: "Ask more clarifying questions during spec creation"
+```
+
 Store the answers as:
 
 - `config.auto_commit = true/false`
 - `config.auto_update_claude_md = true/false`
 - `config.smart_parallelism = true/false`
 - `config.replan_on_exec = true/false`
+- `config.uses_spec = true/false`
+- `config.spec_verbose = true/false` (only if uses_spec = true, otherwise false)
 
 ## Step 3: Get Project Name
 
@@ -118,6 +144,8 @@ Task tool:
       auto_update_claude_md: [true/false]
       smart_parallelism: [true/false]
       replan_on_exec: [true/false]
+      uses_spec: [true/false]
+      spec_verbose: [true/false]
 
     BEGIN SETUP.
 ```
@@ -142,8 +170,16 @@ Configuration:
 - Auto-update CLAUDE.md: [enabled/disabled]
 - Smart Parallelism: [aggressive/conservative]
 - Re-plan on Executing: [enabled/disabled]
+- Use Specs: [enabled/disabled]
+- Spec Verbosity: [maximum inference/interactive] (if specs enabled)
 
 Next steps:
+[If uses_spec enabled:]
+1. Create a spec: /planner:spec-create [prefix] "[description]"
+2. Generate plans from spec: /planner:spec-plans-sync [prefix]
+3. Execute plans: /planner:batch --prefix=[prefix]
+
+[If uses_spec disabled:]
 1. Create plans: Tell Claude "Create plans for [feature]"
 2. Execute plans: Tell Claude "Execute all [prefix] plans"
 
@@ -198,6 +234,18 @@ When setting up planner in a project, this skill:
 - When disabled: Executes plans as written without re-planning (faster execution)
 - Recommended: Disabled (for speed)
 
+**Use Specs (uses_spec):**
+
+- When enabled: Spec workflow is active - create specs before plans
+- When disabled: Traditional plan-only workflow
+- Recommended: Enabled (for comprehensive documentation)
+
+**Spec Verbosity (spec_verbose):**
+
+- Maximum inference: Infers everything possible from codebase, minimal user questions
+- Interactive: Asks more clarifying questions during spec creation
+- Recommended: Maximum inference (for speed)
+
 ### Directory Structure Created
 
 ```
@@ -230,7 +278,9 @@ Users can edit `plans/planner.config.json` directly:
   "auto_commit": true,
   "auto_update_claude_md": false,
   "smart_parallelism": true,
-  "replan_on_exec": false
+  "replan_on_exec": false,
+  "uses_spec": true,
+  "spec_verbose": false
 }
 ```
 

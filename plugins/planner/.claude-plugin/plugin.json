@@ -1,7 +1,7 @@
 {
   "name": "planner",
-  "description": "Sub-agent-based plan execution system with automatic dependency resolution, parallelism, and safety checks",
-  "version": "2.1.0",
+  "description": "Sub-agent-based plan execution system with specification workflow, automatic dependency resolution, parallelism, and safety checks",
+  "version": "3.0.0",
   "author": {
     "name": "Djalma Araujo"
   }

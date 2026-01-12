@@ -24,6 +24,16 @@ Verify planner is initialized:
 
 3. Stop here if not initialized
 
+## Step 1b: Find Spec Files
+
+Check for any spec files in the project:
+
+1. Use Glob: `plans/*-spec.md`
+2. For each spec found:
+   - Read the Configuration section to extract status (DRAFT, ACTIVE, DEPRECATED)
+   - Store spec filename and status
+3. Store specs list for display
+
 ## Step 2: Read PROGRESS.md
 
 Read the full content of `plans/PROGRESS.md`:
@@ -70,6 +80,18 @@ PLANNER STATUS
 
 Overall Progress: [##########..........] 50% (5/10)
 
+[If specs exist:]
+======================================
+SPECIFICATIONS
+======================================
+| Spec              | Status      | Related Plans |
+| ----------------- | ----------- | ------------- |
+| auth-spec.md      | ACTIVE      | 5 plans       |
+| checkout-spec.md  | DRAFT       | 0 plans       |
+| old-spec.md       | DEPRECATED  | 3 plans       |
+
+[End if]
+
 ------ Feature Name 1 ------
 [x] plan-01.md (Completed 2026-01-09)
 [~] plan-02.md (IN PROGRESS)
@@ -107,16 +129,36 @@ SUGGESTED COMMANDS
 [Based on current state - see logic below]
 ```
 
-**Status Icons:**
+**Status Icons (Plans):**
 
 - `[x]` = COMPLETED
 - `[ ]` = NOT STARTED
 - `[~]` = IN PROGRESS
 - `[!]` = FAILED
 
+**Spec Status Values:**
+
+- `DRAFT` = Spec is being worked on
+- `ACTIVE` = Spec is approved, ready for plan generation
+- `DEPRECATED` = Spec is superseded or no longer valid
+
 ## Step 6: Suggest Commands
 
 Based on current state, suggest relevant commands:
+
+**If has DRAFT specs:**
+
+```
+Review spec: Open plans/[prefix]-spec.md
+Approve spec: Update status to ACTIVE in the spec file
+Generate plans: /planner:spec-plans-sync [prefix]
+```
+
+**If has ACTIVE specs with no plans:**
+
+```
+Generate plans from spec: /planner:spec-plans-sync [prefix]
+```
 
 **If has IN PROGRESS plans:**
 
@@ -146,7 +188,8 @@ Retry failed: Tell me "Execute [failed-plan]"
 
 ```
 All done! 🎉
-Create more: Tell me "Create plans for [new feature]"
+Create more spec: /planner:spec-create [prefix] "[description]"
+Create more plans: Tell me "Create plans for [new feature]"
 ```
 
 ---
@@ -157,10 +200,12 @@ Create more: Tell me "Create plans for [new feature]"
 
 When showing status, this skill:
 
-1. Reads `plans/PROGRESS.md` to get plan statuses
-2. Shows all plans with IN PROGRESS, FAILED or NOT STARTED as tables
-3. Shows a list of all COMPLETED plans at the bottom
-4. Provides helpful commands for continuing work
+1. Finds all spec files (`plans/*-spec.md`) and shows their status
+2. Reads `plans/PROGRESS.md` to get plan statuses
+3. Shows specs with their status (DRAFT, ACTIVE, DEPRECATED) and related plan count
+4. Shows all plans with IN PROGRESS, FAILED or NOT STARTED as tables
+5. Shows a list of all COMPLETED plans at the bottom
+6. Provides helpful commands for continuing work (including spec-related commands)
 
 ### Parsing PROGRESS.md Tables
 
@@ -223,10 +268,12 @@ Create more: Tell me "Create plans for [new feature]"
 
 | State                            | Suggested Commands                          |
 | -------------------------------- | ------------------------------------------- |
+| Has DRAFT specs                  | Review spec, Approve spec, Generate plans   |
+| Has ACTIVE specs (no plans)      | Generate plans: spec-plans-sync [prefix]    |
 | Has IN PROGRESS plan             | Continue current: Execute [plan]            |
 | Has NOT STARTED plans (deps met) | Start next: Execute [plan]                  |
 | Has plans with same prefix       | Run batch: Execute all [prefix] plans       |
-| All complete                     | Create more: Create plans for [description] |
+| All complete                     | Create more spec or plans                   |
 | Has FAILED plans                 | Retry: Execute [failed-plan]                |
 
 ### Example

@@ -21,6 +21,8 @@ When spawned, you receive:
   - `auto_update_claude_md`: true/false - Auto-update project CLAUDE.md when needed
   - `smart_parallelism`: true/false - Enable aggressive parallel plan identification
   - `replan_on_exec`: true/false - Re-analyze and draft fresh implementation before executing (slows execution)
+  - `uses_spec`: true/false - Enable spec workflow (create specs before plans)
+  - `spec_verbose`: true/false - Interactive mode for spec creation (more questions)
 - `migration_needed`: true/false - Whether migrating from old CLAUDE.md config format
 
 ---
@@ -110,7 +112,9 @@ Create `plans/planner.config.json` with the configuration:
   "auto_commit": [value from config.auto_commit],
   "auto_update_claude_md": [value from config.auto_update_claude_md],
   "smart_parallelism": [value from config.smart_parallelism],
-  "replan_on_exec": [value from config.replan_on_exec]
+  "replan_on_exec": [value from config.replan_on_exec],
+  "uses_spec": [value from config.uses_spec],
+  "spec_verbose": [value from config.spec_verbose]
 }
 ```
 
@@ -160,10 +164,18 @@ Configuration saved:
 - Auto-update CLAUDE.md: [enabled/disabled based on config]
 - Smart Parallelism: [aggressive/conservative based on config]
 - Re-plan on Executing: [enabled/disabled based on config]
+- Use Specs: [enabled/disabled based on config]
+- Spec Verbosity: [maximum inference/interactive based on config] (if uses_spec enabled)
 
 You can change these settings anytime by editing plans/planner.config.json
 
 Next steps:
+[If uses_spec enabled:]
+1. Create a spec: /planner:spec-create [prefix] "[description]"
+2. Generate plans: /planner:spec-plans-sync [prefix]
+3. Execute: /planner:batch --prefix=[prefix]
+
+[If uses_spec disabled:]
 Tell me what feature you want to build, and I'll create plan files for it.
 
 Example:

@@ -1,6 +1,6 @@
 ---
 name: planner-eject-template
-description: Export the default plan template to your project's plans/ folder for customization. Supports "plan" templates (spec templates coming soon).
+description: Export the default plan or spec template to your project's plans/ folder for customization. Supports "plan" and "spec" template types.
 allowed-tools: Read, Write, Glob, Bash, AskUserQuestion
 user-invocable: true
 ---
@@ -28,29 +28,20 @@ Options:
   - label: "plan"
     description: "Export the plan template for customizing how plans are created"
   - label: "spec"
-    description: "Export the spec template (coming soon)"
+    description: "Export the spec template for customizing how specifications are created"
 ```
 
 After the user responds, continue with Step 2 using their selection.
 
 ## Step 2: Handle Template Type
 
-### If argument is `spec`:
-
-Output this message and exit:
-
-```
-════════════════════════════════════════
-Specs are coming soon!
-
-The spec template feature is under development.
-Stay tuned for updates.
-════════════════════════════════════════
-```
-
 ### If argument is `plan`:
 
-Proceed to Step 3.
+Proceed to Step 3 with `template_type = "plan"`.
+
+### If argument is `spec`:
+
+Proceed to Step 3 with `template_type = "spec"`.
 
 ### If argument is invalid:
 
@@ -80,10 +71,17 @@ the planner in your project.
 
 ## Step 4: Check for Existing Template
 
+**If `template_type = "plan"`:**
 1. Check if `plans/task.TEMPLATE.md` already exists
 2. If it exists, ask for confirmation to overwrite (or skip if user passed `--force`)
 
+**If `template_type = "spec"`:**
+1. Check if `plans/spec.TEMPLATE.md` already exists
+2. If it exists, ask for confirmation to overwrite (or skip if user passed `--force`)
+
 ## Step 5: Copy Template
+
+**If `template_type = "plan"`:**
 
 1. Read the default template from the plugin:
    - Path: Find the plugin root and read `templates/task.TEMPLATE.md`
@@ -95,13 +93,24 @@ the planner in your project.
    - Create `plans/standards/` directory if it doesn't exist
    - Copy all files from plugin's `templates/standards/` to `plans/standards/`
 
+**If `template_type = "spec"`:**
+
+1. Read the default spec template from the plugin:
+   - Path: Find the plugin root and read `templates/spec.TEMPLATE.md`
+
+2. Write the template to `plans/spec.TEMPLATE.md`
+
+3. Also copy the standards directory (if not already copied):
+   - Create `plans/standards/` directory if it doesn't exist
+   - Copy all files from plugin's `templates/standards/` to `plans/standards/`
+
 ## Step 6: Report Success
 
-Output this message:
+**If `template_type = "plan"`:**
 
 ```
 ════════════════════════════════════════
-Template Ejected Successfully
+Plan Template Ejected Successfully
 
 Files created:
   plans/task.TEMPLATE.md
@@ -123,6 +132,43 @@ Edit the template to match your project's needs.
 ════════════════════════════════════════
 ```
 
+**If `template_type = "spec"`:**
+
+```
+════════════════════════════════════════
+Spec Template Ejected Successfully
+
+Files created:
+  plans/spec.TEMPLATE.md
+  plans/standards/general-development.md
+  plans/standards/error-handling.md
+  plans/standards/validation.md
+  plans/standards/code-commenting.md
+  plans/standards/coding-style.md
+  plans/standards/test-coverage.md
+  plans/standards/backward-compatibility.md
+  plans/standards/plan-execution.md
+
+You can now customize the spec template for your project.
+The spec-creator will use your custom template when creating
+new specifications.
+
+Template placeholders use {{PLACEHOLDER}} syntax.
+Edit the template to match your project's needs.
+
+The spec template includes 7 sections:
+1. Front Matter
+2. Introduction & Overview
+3. Functional Requirements
+4. Non-Functional Requirements
+5. Design & Technical Details
+6. Implementation & Logistics
+7. Appendix
+
+Customize these sections to fit your project's specification needs.
+════════════════════════════════════════
+```
+
 ---
 
 ## Implementation Notes
@@ -130,4 +176,11 @@ Edit the template to match your project's needs.
 - The template uses `{{PLACEHOLDER}}` syntax for values to be filled in
 - Convention files use `@` mentions that Claude can reference
 - Users can customize the template structure while keeping core sections
-- If the user's template is missing required sections, the plan-creator agent will add them and notify the user
+- If the user's template is missing required sections, the creator agent will add them and notify the user
+
+### Template Types
+
+| Type | Source File | Destination | Purpose |
+|------|-------------|-------------|---------|
+| plan | templates/task.TEMPLATE.md | plans/task.TEMPLATE.md | Customize plan creation |
+| spec | templates/spec.TEMPLATE.md | plans/spec.TEMPLATE.md | Customize spec creation |

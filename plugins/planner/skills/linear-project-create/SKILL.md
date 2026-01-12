@@ -47,11 +47,22 @@ multiSelect: false
 
 3. **Store the prefix** for filtering plans
 
+## Step 2b: Check for Spec File
+
+Check if a spec file exists for this prefix:
+
+1. **Use Glob**: Check if `plans/[prefix]-spec.md` exists
+2. **If spec exists**:
+   - Store `has_spec = true`
+   - Read the spec file content for later use
+3. **If no spec**:
+   - Store `has_spec = false`
+
 ## Step 3: Find Related Plans
 
 1. **Read PROGRESS.md**: Read `plans/PROGRESS.md`
 2. **Find matching section**: Look for table containing plans with the prefix
-3. **Extract plan filenames**: Get all plans matching `[prefix]-*.md` pattern
+3. **Extract plan filenames**: Get all plans matching `[prefix]-*.md` pattern (exclude spec file)
 4. **Verify files exist**: Use Glob to confirm `plans/[prefix]-*.md` files exist
 
 If no plans found:
@@ -68,6 +79,9 @@ Available prefixes detected:
 
 To create plans first, run:
   /planner:create "your feature description"
+  OR (if using specs)
+  /planner:spec-create [prefix] "[description]"
+  /planner:spec-plans-sync [prefix]
 ════════════════════════════════════════
 ```
 
@@ -83,7 +97,68 @@ For each plan file matching the prefix:
    - **Testing**: How to verify changes
 3. **Store content** for spec generation
 
+## Step 4b: Ask About Spec Usage (if has_spec = true)
+
+If a spec file exists, ask the user how they want to use it:
+
+```
+Question: "A spec file exists for this prefix. How would you like to use it for the Linear project?"
+Header: "Spec Usage"
+Options: [
+  "Use spec as description (Recommended)",
+    description: "Use the full spec content as the project description"
+  "Summarize spec",
+    description: "Generate a condensed summary of the spec for the project"
+  "Link to spec file",
+    description: "Just reference the spec file location in the description"
+  "Ignore spec - use plans only",
+    description: "Generate description from plans, ignoring the spec"
+]
+multiSelect: false
+```
+
+Store the selection as `spec_usage`.
+
 ## Step 5: Generate Project Spec
+
+Create a comprehensive project description based on `spec_usage` (or from plans if no spec):
+
+**If `spec_usage = "Use spec as description"` or `has_spec = true` with spec selected:**
+
+Use the spec content directly, extracting key sections:
+- Overview from Section 2.1 (Purpose)
+- Goals from Section 2.2
+- Scope from Section 2.3
+- Requirements from Section 3
+- Technical details from Section 5
+- Implementation from Section 6
+
+Format as markdown for Linear project description.
+
+**If `spec_usage = "Summarize spec"`:**
+
+Generate a condensed summary (500-1000 chars) of the spec covering:
+- Main purpose
+- Key features
+- Technical approach
+- Success criteria
+
+**If `spec_usage = "Link to spec file"`:**
+
+Create minimal description with link:
+```markdown
+## Overview
+
+See full specification: `plans/[prefix]-spec.md`
+
+## Quick Summary
+[2-3 sentence summary of spec purpose]
+
+## Plans
+[N] implementation plans are tracked in this project.
+```
+
+**If `spec_usage = "Ignore spec"` or `has_spec = false`:**
 
 Create a comprehensive project description by synthesizing all plan contents:
 
@@ -276,11 +351,26 @@ View project: https://linear.app/team/project/PROJECT-ID
 This skill creates a Linear project from a set of related plans:
 
 1. **Validates MCP**: Ensures Linear MCP is available
-2. **Finds Plans**: Locates all plans with the specified prefix
-3. **Generates Spec**: Creates comprehensive project description from all plans
-4. **Creates Project**: Creates the project in Linear with the spec
-5. **Optional Issues**: Can create issues for each plan in the project
-6. **Updates Plans**: Adds linear_project and linear_issue URLs to plan files
+2. **Checks for Spec**: Looks for `[prefix]-spec.md` file
+3. **Finds Plans**: Locates all plans with the specified prefix
+4. **Asks Spec Usage**: If spec exists, asks how to use it for project description
+5. **Generates Description**: Creates project description from spec or plans
+6. **Creates Project**: Creates the project in Linear with the description
+7. **Optional Issues**: Can create issues for each plan in the project
+8. **Updates Plans**: Adds linear_project and linear_issue URLs to plan files
+
+### Spec Integration
+
+When a spec file exists (`plans/[prefix]-spec.md`), users can choose how to use it:
+
+| Option | Description |
+|--------|-------------|
+| Use spec as description | Full spec content becomes project description |
+| Summarize spec | Condensed summary (500-1000 chars) |
+| Link to spec file | Minimal description with reference to spec |
+| Ignore spec | Generate from plans only (legacy behavior) |
+
+This allows flexibility in how detailed the Linear project description should be.
 
 ### Project Spec Generation
 

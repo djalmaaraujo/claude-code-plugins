@@ -133,11 +133,23 @@ Linear handles milestones through project milestones or roadmap features. Use th
 
 3. **Store milestone identifier** for issue association
 
+## Step 7b: Check for Spec Files
+
+Check for spec files that could provide milestone context:
+
+1. **Use Glob**: Find all `plans/*-spec.md` files
+2. **For each spec found**:
+   - Read the Configuration section to extract prefix
+   - Store spec file info
+3. **Store specs list** for potential usage
+
 ## Step 8: Ask About Plan-Based Issues
 
 1. **Read plans/PROGRESS.md** to find available plan prefixes
 2. **Parse prefixes**: Extract unique prefixes from plan names (e.g., "auth", "appt", "checkout")
-3. **Use AskUserQuestion**:
+3. **Check for matching specs**: Note which prefixes have spec files
+
+4. **Use AskUserQuestion**:
 
 ```
 Question: "Would you like to create issues from plans for this milestone?"
@@ -149,26 +161,46 @@ Options: [
 multiSelect: false
 ```
 
-4. **If "No"**: Skip to Step 11
-5. **If "Yes"**: Continue to Step 9
+5. **If "No"**: Skip to Step 11
+6. **If "Yes"**: Continue to Step 9
 
 ## Step 9: Select Plan Prefix
 
-1. **Use AskUserQuestion** to select prefix:
+1. **Use AskUserQuestion** to select prefix (indicate if spec exists):
 
 ```
 Question: "Which plan prefix should be used for milestone issues?"
 Header: "Prefix"
 Options: [
-  "auth (5 plans)",
+  "auth (5 plans, has spec)",
   "appt (3 plans)",
-  "checkout (2 plans)",
+  "checkout (2 plans, has spec)",
   "Other"
 ]
 multiSelect: false
 ```
 
 2. **Store selected prefix**
+
+## Step 9b: Ask About Spec Usage (if spec exists for selected prefix)
+
+If a spec exists for the selected prefix:
+
+```
+Question: "A spec file exists for this prefix. How would you like to use it for the milestone?"
+Header: "Spec Usage"
+Options: [
+  "Use spec for milestone description (Recommended)",
+    description: "Include relevant spec sections in the milestone description"
+  "Summarize spec",
+    description: "Generate a condensed summary of the spec"
+  "Ignore spec",
+    description: "Use plan content only for issues"
+]
+multiSelect: false
+```
+
+Store selection as `milestone_spec_usage`.
 
 ## Step 10: Create Issues from Plans
 
@@ -257,8 +289,26 @@ This skill creates milestones in existing Linear projects:
 2. **Lists Projects**: Shows user's projects for selection
 3. **Analyzes Patterns**: Suggests milestone name based on existing milestones
 4. **Creates Milestone**: Adds milestone to selected project
-5. **Optional Issues**: Can create issues from plans for the milestone
-6. **Updates Plans**: Adds linear_project and linear_issue URLs to plan files
+5. **Checks for Specs**: Identifies prefixes that have spec files
+6. **Asks Spec Usage**: If spec exists, asks how to use it for milestone description
+7. **Optional Issues**: Can create issues from plans for the milestone
+8. **Updates Plans**: Adds linear_project and linear_issue URLs to plan files
+
+### Spec Integration
+
+When selecting plans for a milestone, the skill shows which prefixes have spec files:
+- `auth (5 plans, has spec)` - indicates spec file exists
+- `appt (3 plans)` - no spec file
+
+If the selected prefix has a spec, users can choose how to use it:
+
+| Option | Description |
+|--------|-------------|
+| Use spec for milestone description | Include spec sections in milestone description |
+| Summarize spec | Condensed summary for milestone |
+| Ignore spec | Use plan content only |
+
+This provides context from the spec for better milestone documentation.
 
 ### Milestone Naming Suggestions
 
