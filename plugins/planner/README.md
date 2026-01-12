@@ -11,6 +11,166 @@ Sub-agent-based plan execution system with automatic dependency resolution, para
 - ✅ **Safety checks** - Validates dependencies before execution
 - ✅ **Configuration options** - Auto-commit, CLAUDE.md updates, and more
 
+## Methodology
+
+### Philosophy: Small, Self-Contained Tasks
+
+The planner is built on a core principle: **large tasks fail, small tasks succeed**.
+
+When you ask Claude to implement a complex feature in one go, several things go wrong:
+
+1. **Context Exhaustion**: Claude's context window fills up with code, conversation history, and intermediate results. By the time it reaches step 10, it has forgotten the nuances of step 1.
+
+2. **Compounding Errors**: A small mistake in step 3 propagates through steps 4-10. Without checkpoints, you end up with a mess that's hard to debug.
+
+3. **No Recovery**: If the session crashes, times out, or you need to stop - you lose everything. There's no way to resume from where you left off.
+
+4. **Cognitive Overload**: Even Claude struggles to hold an entire feature's requirements, implementation details, edge cases, and testing strategy in mind simultaneously.
+
+The solution is **decomposition**: break the feature into small, self-contained plans that each do one thing well.
+
+### What Makes a Good Plan?
+
+Each plan should be:
+
+- **Single-purpose**: One clear objective (e.g., "Create user model" not "Create user model and auth routes and middleware")
+- **Self-contained**: All context needed is in the plan file itself - no assumptions about what Claude "remembers"
+- **Independently testable**: You can verify the plan worked without running other plans
+- **~40% context usage**: Small enough that Claude has room to think, not just read
+
+### Why Sub-Agents?
+
+This is the key insight: **each plan runs in a fresh sub-agent with zero memory of previous plans**.
+
+```
+Main Session                    Sub-Agents (isolated)
+─────────────                   ─────────────────────
+┌─────────────┐
+│ User: "run  │                 ┌─────────────────┐
+│ batch"      │────────────────▶│ Agent 1: 001.md │ ← Fresh context
+└─────────────┘                 │ (only sees 001) │
+                                └─────────────────┘
+                                         │
+                                         ▼ completes
+                                ┌─────────────────┐
+                                │ Agent 2: 002.md │ ← Fresh context
+                                │ (only sees 002) │
+                                └─────────────────┘
+                                         │
+                                         ▼ completes
+                                ┌─────────────────┐
+                                │ Agent 3: 003.md │ ← Fresh context
+                                │ (only sees 003) │
+                                └─────────────────┘
+```
+
+**Why this matters:**
+
+| Traditional Approach | Sub-Agent Approach |
+|---------------------|-------------------|
+| Context accumulates with each step | Each plan starts fresh |
+| Errors from plan 1 confuse plan 5 | Plan 5 only knows about plan 5 |
+| Can't resume - context is lost | Resume any plan anytime |
+| Quality degrades as context fills | Consistent quality throughout |
+| One bad plan ruins the session | Failed plans are isolated |
+
+### The Context Problem (Solved)
+
+Imagine implementing a 10-step feature:
+
+**Without planner:**
+```
+Step 1:  [████░░░░░░░░░░░░░░░░] 20% context used
+Step 5:  [████████████░░░░░░░░] 60% context used
+Step 8:  [████████████████████] 100% context - degraded output
+Step 10: [💥 OVERFLOW] - lost work, confused Claude
+```
+
+**With planner:**
+```
+Plan 001: [████░░░░░░░░░░░░░░░░] 20% → completes → discarded
+Plan 002: [████░░░░░░░░░░░░░░░░] 20% → completes → discarded
+Plan 003: [████░░░░░░░░░░░░░░░░] 20% → completes → discarded
+...each plan has full context budget
+```
+
+Each sub-agent gets the **entire context window** for just its plan. This means:
+- More room for reasoning and edge cases
+- Better code quality
+- Consistent performance from first plan to last
+
+### How It Works
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  User Request   │────▶│  Plan Creator   │────▶│   Plan Files    │
+│                 │     │   (analyzes     │     │  001-setup.md   │
+│ "Add user auth" │     │    codebase)    │     │  002-models.md  │
+└─────────────────┘     └─────────────────┘     │  003-routes.md  │
+                                                └────────┬────────┘
+                                                         │
+                        ┌────────────────────────────────┘
+                        ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  PROGRESS.md    │◀────│  Plan Executor  │◀────│ Dependency      │
+│  (tracking)     │     │  (sub-agents)   │     │ Resolution      │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+1. **Plan Creation**: The `plan-creator` agent analyzes your codebase and breaks down the feature into numbered plan files with clear dependencies.
+
+2. **Dependency Resolution**: Each plan declares its dependencies (e.g., `depends_on: 001-setup`). The batch executor builds a dependency graph and determines execution order.
+
+3. **Sub-Agent Execution**: Each plan is executed by a dedicated sub-agent (`plan-executor`) that:
+   - Reads only the plan file (fresh context)
+   - Implements the steps exactly as written
+   - Updates PROGRESS.md on completion
+   - Has no memory of other plans
+
+4. **Parallel Execution**: Independent plans (no shared dependencies) run simultaneously, reducing total execution time.
+
+### Plans as Documentation
+
+A side benefit: your plans become permanent documentation of *how* the feature was built.
+
+- **Onboarding**: New team members can read plans to understand the feature
+- **Debugging**: When something breaks, check which plan implemented it
+- **Auditing**: Clear record of what changed and why
+- **Reusability**: Similar features can reuse plan structures
+
+### Dependency Graph Example
+
+```
+001-setup-database (no deps)
+    │
+    ├──▶ 002-user-model (depends: 001)
+    │        │
+    │        └──▶ 004-auth-routes (depends: 002, 003)
+    │                     │
+    └──▶ 003-session-store (depends: 001)
+                          │
+              005-middleware (depends: 004)
+```
+
+**Execution rounds:**
+- Round 1: `001-setup-database` (parallel: none)
+- Round 2: `002-user-model`, `003-session-store` (parallel: yes)
+- Round 3: `004-auth-routes` (parallel: none)
+- Round 4: `005-middleware` (parallel: none)
+
+### When to Use Planner
+
+**Good fit:**
+- Multi-file features (auth, API endpoints, UI components)
+- Refactoring across many files
+- Features with clear sequential steps
+- Team handoffs (plans are documentation)
+
+**Not needed:**
+- Single-file changes
+- Bug fixes
+- Quick tweaks
+
 ## Quick Start
 
 ### 1. Initialize Planner
