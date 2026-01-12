@@ -25,11 +25,13 @@ Complete Slack integration for Claude Code - send messages, search users, with i
 ### 1. Setup (First Time Only)
 
 Run the setup wizard:
+
 ```
 /slack:slack-setup
 ```
 
 Or check current status:
+
 ```
 /slack:slack-status
 ```
@@ -37,11 +39,13 @@ Or check current status:
 ### 2. Search for Users
 
 Use the slash command:
+
 ```
 /slack:slack-search-user djalma
 ```
 
 Or via bash:
+
 ```bash
 ~/.claude/plugins/slack/skills/slack-search-user/search-user.sh djalma
 ```
@@ -49,32 +53,36 @@ Or via bash:
 ### 3. Send Messages
 
 Use the slash command:
+
 ```
 /slack:slack-send-message Send 'Hello team!' to #slack-ai-testing
 ```
 
 **Send to a channel:**
+
 ```
 /slack:slack-send-message Post 'Build complete!' to #dev-updates
 ```
 
 **Send a DM:**
+
 ```
 /slack:slack-send-message DM @djalma saying: Can you review my PR?
 ```
 
 ## Available Slash Commands
 
-| Command | Description |
-|---------|-------------|
-| `/slack:slack-setup` | Interactive setup wizard for credentials |
-| `/slack:slack-status` | Check configuration and authentication status |
-| `/slack:slack-search-user` | Search for users by name |
-| `/slack:slack-send-message` | Send messages to channels or DMs |
+| Command                     | Description                                   |
+| --------------------------- | --------------------------------------------- |
+| `/slack:slack-setup`        | Interactive setup wizard for credentials      |
+| `/slack:slack-status`       | Check configuration and authentication status |
+| `/slack:slack-search-user`  | Search for users by name                      |
+| `/slack:slack-send-message` | Send messages to channels or DMs              |
 
 ## Skills
 
 ### slack-status
+
 Validates Slack configuration and credentials. Automatically called by other skills.
 
 ```bash
@@ -82,6 +90,7 @@ Validates Slack configuration and credentials. Automatically called by other ski
 ```
 
 **Output:**
+
 - `OK` - Everything is working
 - `MISSING_CONFIG` - Config file doesn't exist
 - `MISSING_CREDENTIALS` - Required fields missing
@@ -89,14 +98,17 @@ Validates Slack configuration and credentials. Automatically called by other ski
 - `EXPIRED_TOKEN` - Token has expired
 
 ### slack-setup
+
 Interactive setup wizard that guides you through obtaining Slack credentials.
 
 See `skills/slack-setup/SKILL.md` for detailed instructions.
 
 ### slack-search-user
+
 Search for Slack users with intelligent caching.
 
 **Usage:**
+
 ```bash
 # Find user
 ~/.claude/plugins/slack/skills/slack-search-user/search-user.sh <username>
@@ -107,15 +119,18 @@ Search for Slack users with intelligent caching.
 ```
 
 **Features:**
+
 - Cache-first strategy (fast lookups)
 - API fallback (finds any user)
 - Bulk caching (1000 users per request)
 - Case-insensitive matching
 
 ### slack-send-message
+
 Send messages to channels or DMs to users.
 
 **Features:**
+
 - Automatic channel/DM detection
 - Integrates with slack-search-user
 - Validates configuration first
@@ -124,11 +139,13 @@ Send messages to channels or DMs to users.
 ## Configuration
 
 All configuration is stored in a single file:
+
 ```
 ~/.claude/plugins/slack/config.json
 ```
 
 **Structure:**
+
 ```json
 {
   "workspace": "a8c.slack.com",
@@ -174,6 +191,7 @@ slack/
 - **curl** 7.0+ - For HTTP requests
 
 Install on macOS:
+
 ```bash
 brew install jq python curl
 ```
@@ -181,24 +199,29 @@ brew install jq python curl
 ## How It Works
 
 ### Credentials
+
 The plugin uses your browser's Slack session credentials (token and cookie). These are the same credentials your browser uses when you're logged into Slack.
 
 **Getting credentials:**
+
 1. Open Slack in Chrome
 2. Open DevTools (Cmd+Option+J)
 3. Network tab → Send a message → Find `chat.postMessage`
 4. Extract token and cookie from the request
 
 **Security:**
+
 - Credentials are stored locally only
 - Config file has 600 permissions (only you can read)
 - No passwords are stored
 - Uses existing browser session
 
 ### Caching
+
 User searches are cached to avoid repeated API calls.
 
 **How it works:**
+
 1. First search checks cache (using `jq` - very fast)
 2. If not found, calls Slack API
 3. API returns up to 1000 users per request
@@ -206,6 +229,7 @@ User searches are cached to avoid repeated API calls.
 5. Future searches are instant
 
 **Performance:**
+
 - Cache lookup: ~10ms even with 50,000 users
 - API call: ~500ms + caching time
 - Subsequent lookups: instant
@@ -213,24 +237,31 @@ User searches are cached to avoid repeated API calls.
 ## Troubleshooting
 
 ### "Slack is not properly configured"
+
 Run the slack-status check to see what's wrong:
+
 ```bash
 ~/.claude/plugins/slack/skills/slack-status/check.sh
 ```
 
 ### "invalid_auth" or "token_expired"
+
 Your credentials expired. Get fresh ones:
+
 1. Log out and log back into Slack in browser
 2. Follow setup instructions again
 3. Update config.json
 
 ### "User not found"
+
 The user might not exist or the username doesn't match:
+
 - Try searching by real name instead
 - Check spelling
 - User might be in a different workspace
 
 ### "channel_not_found"
+
 - Check channel name spelling
 - Make sure you're a member of the channel
 - Private channels require membership
@@ -238,6 +269,7 @@ The user might not exist or the username doesn't match:
 ## Development
 
 ### Testing
+
 ```bash
 # Test status
 ~/.claude/plugins/slack/tests/test-status.sh
@@ -250,6 +282,7 @@ The user might not exist or the username doesn't match:
 ```
 
 ### Adding New Skills
+
 1. Create skill directory in `skills/`
 2. Add `SKILL.md` with documentation
 3. Add executable scripts
@@ -268,5 +301,6 @@ Djalma Araujo
 ## Support
 
 For issues, questions, or contributions:
-- GitHub: https://github.com/djalmaaraujo/claude-slack-plugin
+
+- GitHub: https://github.com/djalmaaraujo/claude-code-plugins
 - Report bugs in Issues section
