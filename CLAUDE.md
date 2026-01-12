@@ -19,6 +19,9 @@ plugins/
 │   ├── commands/                  # Slash commands (thin wrappers)
 │   ├── agents/                    # Subagent definitions (.md files)
 │   ├── skills/                    # Skill definitions (each has SKILL.md)
+│   ├── templates/                 # Default templates for plan creation
+│   │   ├── task.TEMPLATE.md       # Main plan template with {{PLACEHOLDER}} syntax
+│   │   └── standards/             # Convention files referenced by plans
 │   └── hooks/hooks.json           # Hook configurations
 └── slack/                         # Slack integration plugin
     ├── .claude-plugin/plugin.json # Plugin metadata
@@ -40,6 +43,11 @@ plugins/
 - Invoked by commands or automatically by Claude
 
 **Subagents** (`agents/*.md`): Spawned by skills via Task tool with `subagent_type: "planner:agent-name"`
+
+**Templates** (`templates/`): Default templates for plan creation
+- `task.TEMPLATE.md` uses `{{PLACEHOLDER}}` syntax replaced by plan-creator agent
+- `standards/` contains convention files referenced via `@templates/standards/...`
+- Users can eject templates to `plans/` folder for customization via `/planner:planner-eject-template`
 
 **Shared Libraries** (Slack plugin): Bash scripts in `lib/` sourced by skill scripts
 
