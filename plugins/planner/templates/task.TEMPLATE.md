@@ -1,8 +1,26 @@
 # Configuration
 
+<!--
+IMPORTANT: This section controls plan execution behavior.
+All {{PLACEHOLDER}} values will be replaced by the plan-creator agent.
+-->
+
 depends_on: {{DEPENDENCIES}}
+<!--
+  Dependencies that must be completed before this plan can execute.
+  Format: Comma-separated list of plan filenames (without .md extension)
+  Examples:
+    depends_on: none
+    depends_on: 001-setup-database
+    depends_on: 001-setup-database, 002-create-models
+  The planner-exec skill will block execution if dependencies are not completed.
+-->
+
 linear_project: {{LINEAR_PROJECT_IF_PROVIDED}}
+<!-- Optional: Linear project ID or name to associate with this plan -->
+
 linear_issue: {{LINEAR_ISSUE_IF_PROVIDED}}
+<!-- Optional: Linear issue ID to link to this plan -->
 
 # Plan: {{PLAN_FILENAME}}
 
@@ -96,12 +114,44 @@ Next suggested plan: {{NEXT_PLAN_FILENAME}}
 
 ## Template Usage Notes
 
-This template provides a structure for creating consistent, well-documented plans. When using this template:
+<!--
+This section is for template customization guidance.
+Remove this entire section when creating actual plans.
+-->
 
-1. **Replace all `{{PLACEHOLDER}}` values** with actual content
-2. **Remove unused sections** if they don't apply to your plan
-3. **Add sections** if the plan requires additional documentation
-4. **Keep plans focused** - aim for ~40% context usage during execution
-5. **Include all necessary context** - plans run with no memory of previous plans
+This template provides a structure for creating consistent, well-documented plans.
 
-If you need to add sections not covered by this template, inform the user at completion that additional sections were needed.
+### How Placeholders Work
+
+All `{{PLACEHOLDER}}` values in this template will be **automatically replaced** by the `plan-creator` agent when generating plans. The agent:
+
+1. Analyzes your request and codebase context
+2. Fills in all placeholders with appropriate content
+3. Removes any unused optional sections
+4. Adds additional sections if needed
+
+### Placeholder Reference
+
+| Placeholder | Description |
+|-------------|-------------|
+| `{{DEPENDENCIES}}` | Plan dependencies (e.g., `none` or `001-setup, 002-models`) |
+| `{{LINEAR_PROJECT_IF_PROVIDED}}` | Linear project ID (or blank if none) |
+| `{{LINEAR_ISSUE_IF_PROVIDED}}` | Linear issue ID (or blank if none) |
+| `{{PLAN_FILENAME}}` | The plan's filename (e.g., `001-create-auth-module`) |
+| `{{OBJECTIVE_DESCRIPTION}}` | Clear description of what the plan accomplishes |
+| `{{STEP_TITLE}}` | Title for each implementation step |
+| `{{STEP_DETAILS}}` | Detailed instructions for each step |
+| `{{FILE_PATH}}` | Path to file being modified |
+| `{{CREATE/MODIFY/DELETE}}` | Action type for the file |
+| `{{WHAT_CHANGES}}` | Description of changes to the file |
+
+### Customizing This Template
+
+When you eject this template to your project's `plans/` folder, you can:
+
+1. **Modify sections** - Change headings, add fields, restructure as needed
+2. **Add new placeholders** - Use `{{YOUR_PLACEHOLDER}}` syntax
+3. **Remove sections** - Delete sections you don't need
+4. **Add project-specific guidance** - Include your team's conventions
+
+The plan-creator agent will use your customized template when generating new plans.
