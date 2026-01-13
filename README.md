@@ -9,6 +9,28 @@ A collection of plugins for [Claude Code](https://claude.ai/code).
 | [**planner**](plugins/planner/README.md) | Sub-agent-based plan execution with dependency resolution and parallelism |
 | [**slack**](plugins/slack/README.md) | Send Slack messages and search users via browser session credentials |
 
+## Dependencies
+
+### Planner Plugin
+
+**Optional dependencies for Linear integration:**
+- [Linear MCP server](https://github.com/modelcontextprotocol/servers/tree/main/src/linear) - Required only if you want to use Linear integration features (`/planner:linear-project-create`, `/planner:linear-milestone-create`, `/planner:linear-issue-create`)
+
+All other planner features work without any external dependencies.
+
+### Slack Plugin
+
+**System requirements:**
+- jq 1.6+ (JSON processor)
+- Python 3.6+ (for API calls)
+- curl 7.0+ (for HTTP requests)
+
+**Authentication requirements:**
+- Slack browser session credentials (token and cookie)
+- Obtained via `/slack:slack-setup` wizard from your browser's DevTools
+
+See individual plugin READMEs for detailed setup instructions.
+
 ## Installation
 
 ### Add the Marketplace

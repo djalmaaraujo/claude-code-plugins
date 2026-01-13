@@ -13,6 +13,32 @@ Complete Slack integration for Claude Code - send messages, search users, with i
 - ✅ **Case-insensitive matching** - Find users by username, real name, or display name
 - ✅ **Bulk caching** - Caches up to 1000 users per API call
 
+## Dependencies
+
+### System Requirements
+
+- **jq** 1.6+ - JSON processor for fast cache lookups
+- **Python** 3.6+ - For Slack API calls
+- **curl** 7.0+ - For HTTP requests
+
+Install on macOS:
+
+```bash
+brew install jq python curl
+```
+
+### Slack Session Credentials
+
+This plugin requires your browser's Slack session credentials (token and cookie) to authenticate API requests. You'll need to:
+
+1. Be logged into Slack in your web browser
+2. Extract your session token (xoxc-...) and cookie (xoxd-...) from browser DevTools
+3. Provide these credentials during setup via `/slack:slack-setup`
+
+**Important:** The plugin uses your existing browser session - no passwords are stored, and credentials remain local on your machine.
+
+See the "How It Works" section below for detailed instructions on obtaining credentials.
+
 ## Installation
 
 ```bash
@@ -182,18 +208,6 @@ slack/
 │
 ├── scripts/                 # Utility scripts
 └── tests/                   # Test scripts
-```
-
-## Requirements
-
-- **jq** 1.6+ - JSON processor
-- **Python** 3.6+ - For API calls
-- **curl** 7.0+ - For HTTP requests
-
-Install on macOS:
-
-```bash
-brew install jq python curl
 ```
 
 ## How It Works

@@ -198,6 +198,31 @@ What you get in return:
 - Bug fixes
 - Quick tweaks
 
+## Dependencies
+
+### Linear Integration (Optional)
+
+The planner includes Linear integration features that allow you to:
+- Create Linear projects from specs (`/planner:linear-project-create`)
+- Create milestones within projects (`/planner:linear-milestone-create`)
+- Create Linear issues from plan files (`/planner:linear-issue-create`)
+
+**Requirements:**
+To use these features, you must have the [Linear MCP server](https://github.com/modelcontextprotocol/servers/tree/main/src/linear) installed and configured in your Claude Code setup.
+
+If you don't need Linear integration, you can use all other planner features without installing the Linear MCP server.
+
+### Slack Plugin (Separate Plugin)
+
+This marketplace also includes a Slack plugin for sending messages and searching users.
+
+**Requirements:**
+To use the Slack plugin (`/slack:slack-send-message`, `/slack:slack-search-user`), you need to:
+1. Run `/slack:slack-setup` to configure credentials
+2. Provide your Slack workspace token and cookie from your browser session
+
+The Slack plugin is completely separate from the planner and is optional.
+
 ## Quick Start
 
 ### 1. Initialize Planner
