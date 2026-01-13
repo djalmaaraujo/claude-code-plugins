@@ -18,11 +18,17 @@
         "name": "Djalma Araujo"
       },
       "skills": [
-        "./skills/planner-setup",
         "./skills/planner-create",
         "./skills/planner-exec",
         "./skills/planner-batch",
-        "./skills/planner-status"
+        "./skills/planner-status",
+        "./skills/planner-eject-template",
+        "./skills/planner-commit",
+        "./skills/spec-create",
+        "./skills/spec-plans-sync",
+        "./skills/linear-issue-create",
+        "./skills/linear-milestone-create",
+        "./skills/linear-project-create"
       ]
     },
     {
