@@ -41,10 +41,13 @@ See the "How It Works" section below for detailed instructions on obtaining cred
 
 ## Installation
 
-```bash
-# The plugin is already installed at:
-~/.claude/plugins/marketplaces/djalmaaraujo-claude-code-plugins/plugins/slack/
-```
+This plugin is part of the djalmaaraujo-claude-code-plugins marketplace.
+
+To install, see the [main marketplace README](../../README.md#installation) for instructions on:
+1. Adding the marketplace: `/plugin marketplace add djalmaaraujo/claude-code-plugins`
+2. Installing this plugin: `/plugin install slack@djalmaaraujo-claude-code-plugins`
+
+Or use the interactive UI: `/plugin` → **Discover** tab
 
 ## Quick Start
 

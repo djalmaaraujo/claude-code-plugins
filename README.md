@@ -35,44 +35,74 @@ See individual plugin READMEs for detailed setup instructions.
 
 ### Add the Marketplace
 
+From within Claude Code, run:
+
 ```bash
-claude plugins:add-marketplace https://github.com/djalmaaraujo/claude-code-plugins
+/plugin marketplace add djalmaaraujo/claude-code-plugins
 ```
 
-### Install Individual Plugins
+Or add via GitHub URL:
+
+```bash
+/plugin marketplace add https://github.com/djalmaaraujo/claude-code-plugins
+```
+
+### Install Plugins
+
+**Option 1: Interactive UI (Recommended)**
+
+```bash
+/plugin
+```
+
+Then navigate to the **Discover** tab, find the plugin you want, and press **Enter** to install.
+
+**Option 2: Command line**
 
 ```bash
 # Install the planner plugin
-claude plugins:install djalmaaraujo-claude-code-plugins:planner
+/plugin install planner@djalmaaraujo-claude-code-plugins
 
 # Install the slack plugin
-claude plugins:install djalmaaraujo-claude-code-plugins:slack
+/plugin install slack@djalmaaraujo-claude-code-plugins
 ```
 
-### Install All Plugins
+## Managing Plugins
+
+### Update Marketplace
+
+Refresh plugin listings from this marketplace:
 
 ```bash
-claude plugins:install djalmaaraujo-claude-code-plugins:*
+/plugin marketplace update djalmaaraujo-claude-code-plugins
 ```
 
-## Updating Plugins
+Or enable auto-updates via the UI:
 
 ```bash
-# Update all plugins from this marketplace
-claude plugins:update djalmaaraujo-claude-code-plugins
-
-# Update a specific plugin
-claude plugins:update djalmaaraujo-claude-code-plugins:planner
+/plugin
 ```
 
-## Uninstalling
+Go to **Marketplaces** tab and toggle **Enable auto-update** for this marketplace.
+
+### Disable/Enable Plugins
+
+```bash
+# Disable a plugin (keep installed)
+/plugin disable planner@djalmaaraujo-claude-code-plugins
+
+# Re-enable a disabled plugin
+/plugin enable planner@djalmaaraujo-claude-code-plugins
+```
+
+### Uninstall
 
 ```bash
 # Remove a specific plugin
-claude plugins:remove djalmaaraujo-claude-code-plugins:slack
+/plugin uninstall slack@djalmaaraujo-claude-code-plugins
 
 # Remove the entire marketplace
-claude plugins:remove-marketplace djalmaaraujo-claude-code-plugins
+/plugin marketplace remove djalmaaraujo-claude-code-plugins
 ```
 
 ## License
