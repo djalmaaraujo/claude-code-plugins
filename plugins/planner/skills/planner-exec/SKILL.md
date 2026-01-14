@@ -3,7 +3,6 @@ name: planner-exec
 description: Execute a single plan file with full dependency validation, configuration options (auto-commit, README update, CLAUDE.md update), conflict detection, and PROGRESS.md tracking. Blocks execution if dependencies are not met. Use when user wants to run a specific plan, execute a plan file, or implement a single plan.
 allowed-tools: Task, TaskOutput, Read, Glob, AskUserQuestion
 user-invocable: true
-agent: plan-executor
 ---
 
 # Execute Single Plan

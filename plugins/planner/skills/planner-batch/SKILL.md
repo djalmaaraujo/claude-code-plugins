@@ -3,7 +3,6 @@ name: planner-batch
 description: Execute multiple plans with automatic dependency resolution and parallel execution. Builds dependency graph, runs independent plans simultaneously, handles sequential dependencies, and applies configuration options. Use when user wants to run multiple plans, batch execute plans, or execute all plans for a feature.
 allowed-tools: Task, TaskOutput, Read, Glob, Grep, AskUserQuestion
 user-invocable: true
-agent: plan-batch-orchestrator
 ---
 
 # Execute Batch Plans
