@@ -14,8 +14,11 @@ allowed-tools: AskUserQuestion, Bash, Write
       "question": "Automatically commit after successful plan execution?",
       "multiSelect": false,
       "options": [
-        {"label": "Yes (Recommended)", "description": "Auto-commit changes after each plan"},
-        {"label": "No", "description": "Manual commits only"}
+        {
+          "label": "Yes (Recommended)",
+          "description": "Auto-commit changes after each plan"
+        },
+        { "label": "No", "description": "Manual commits only" }
       ]
     },
     {
@@ -23,8 +26,11 @@ allowed-tools: AskUserQuestion, Bash, Write
       "question": "Auto-update .claude/CLAUDE.md when code changes make docs inaccurate?",
       "multiSelect": false,
       "options": [
-        {"label": "Yes", "description": "Keep CLAUDE.md updated automatically"},
-        {"label": "No (Recommended)", "description": "Manual updates only"}
+        {
+          "label": "Yes",
+          "description": "Keep CLAUDE.md updated automatically"
+        },
+        { "label": "No (Recommended)", "description": "Manual updates only" }
       ]
     },
     {
@@ -32,8 +38,11 @@ allowed-tools: AskUserQuestion, Bash, Write
       "question": "How should plan dependencies be handled?",
       "multiSelect": false,
       "options": [
-        {"label": "Aggressive (Recommended)", "description": "Maximize parallel execution"},
-        {"label": "Conservative", "description": "More sequential, safer"}
+        {
+          "label": "Aggressive (Recommended)",
+          "description": "Maximize parallel execution"
+        },
+        { "label": "Conservative", "description": "More sequential, safer" }
       ]
     },
     {
@@ -41,8 +50,8 @@ allowed-tools: AskUserQuestion, Bash, Write
       "question": "Re-analyze plans before execution?",
       "multiSelect": false,
       "options": [
-        {"label": "No (Recommended)", "description": "Execute as written"},
-        {"label": "Yes", "description": "Re-analyze first (slower)"}
+        { "label": "No (Recommended)", "description": "Execute as written" },
+        { "label": "Yes", "description": "Re-analyze first (slower)" }
       ]
     }
   ]
@@ -61,8 +70,14 @@ Only ask this if user selected "Yes" for Auto-commit in Step 1:
       "question": "Which commit message standard should be used?",
       "multiSelect": false,
       "options": [
-        {"label": "Conventional Commits (Recommended)", "description": "Structured format: type(scope): description (conventionalcommits.org)"},
-        {"label": "No specific standard", "description": "Simple descriptive commit messages"}
+        {
+          "label": "Conventional Commits (Recommended)",
+          "description": "Structured format: type(scope): description (conventionalcommits.org)"
+        },
+        {
+          "label": "No specific standard",
+          "description": "Simple descriptive commit messages"
+        }
       ]
     }
   ]
@@ -70,6 +85,7 @@ Only ask this if user selected "Yes" for Auto-commit in Step 1:
 ```
 
 Map answers:
+
 - "Conventional Commits" → `auto_commit_standard: "conventional_commits"`
 - "No specific standard" → `auto_commit_standard: "no_standard"`
 
@@ -83,8 +99,11 @@ Map answers:
       "question": "Use specification files before creating plans?",
       "multiSelect": false,
       "options": [
-        {"label": "Yes (Recommended)", "description": "Create specs first, then generate plans"},
-        {"label": "No", "description": "Create plans directly"}
+        {
+          "label": "Yes (Recommended)",
+          "description": "Create specs first, then generate plans"
+        },
+        { "label": "No", "description": "Create plans directly" }
       ]
     },
     {
@@ -92,8 +111,14 @@ Map answers:
       "question": "How interactive should spec creation be?",
       "multiSelect": false,
       "options": [
-        {"label": "Maximum inference (Recommended)", "description": "Infer from codebase, minimal questions"},
-        {"label": "Interactive", "description": "Ask more clarifying questions"}
+        {
+          "label": "Maximum inference (Recommended)",
+          "description": "Infer from codebase, minimal questions"
+        },
+        {
+          "label": "Interactive",
+          "description": "Ask more clarifying questions"
+        }
       ]
     }
   ]
