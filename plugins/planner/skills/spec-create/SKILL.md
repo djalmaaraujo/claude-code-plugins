@@ -3,6 +3,7 @@ name: spec-create
 description: Create a comprehensive specification file with deep codebase analysis. Generates detailed requirements, technical designs, and implementation logistics. The spec serves as the source of truth for related plans.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 user-invocable: true
+context: fork
 ---
 
 # Create Spec

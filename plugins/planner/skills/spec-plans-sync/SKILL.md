@@ -3,6 +3,7 @@ name: spec-plans-sync
 description: Synchronize plans from a spec file. Reads the spec, generates or updates related plans, marks deprecated plans, and updates the spec's Milestones section. Use when user changes a spec and wants to regenerate plans.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Glob, Grep, AskUserQuestion
 user-invocable: true
+context: fork
 ---
 
 # Sync Plans from Spec

@@ -3,82 +3,59 @@ name: planner-batch
 description: Execute multiple plans with automatic dependency resolution and parallel execution. Builds dependency graph, runs independent plans simultaneously, handles sequential dependencies, and applies configuration options. Use when user wants to run multiple plans, batch execute plans, or execute all plans for a feature.
 allowed-tools: Task, TaskOutput, Read, Glob, Grep, AskUserQuestion
 user-invocable: true
+context: fork
 ---
 
 # Execute Batch Plans
 
-You are now executing the planner-batch skill. Follow these steps immediately:
+You will now execute the batch plan workflow. Do NOT just report what you'll do - actually execute each step using the tools available.
 
-**Agent Reference**: This skill uses the plan-batch-orchestrator agent (@agents/plan-batch-orchestrator.md) to perform the actual batch execution orchestration work.
+## EXECUTE NOW: Step 1 - Read Configuration
 
-## Step 1: Read Configuration
+Use the Read tool NOW to read `plans/planner.config.json`.
 
-Read the user's project configuration from `plans/planner.config.json`:
+Extract these values (use defaults if file not found):
+- `auto_commit` (default: false)
+- `auto_commit_standard` (default: "no_standard")
+- `auto_update_claude_md` (default: false)
+- `replan_on_exec` (default: false)
 
-1. **Read configuration file**: Read `plans/planner.config.json`
+## EXECUTE NOW: Step 2 - Find Plans
 
-   - If successful and valid JSON:
-     - Parse: `auto_commit`, `auto_commit_standard`, `auto_update_claude_md`, `replan_on_exec`
-     - Build config object and proceed to Step 2
+Use the Glob tool NOW to find plan files.
 
-2. **Use defaults**: If file not found or invalid:
-   ```
-   config.auto_commit = false
-   config.auto_commit_standard = "no_standard"
-   config.auto_update_claude_md = false
-   config.replan_on_exec = false
-   ```
+Parse the user's arguments to determine the prefix (e.g., "br-doc" from "execute all plans from br-doc").
 
-## Step 2: Resolve Plan List
+Run: `Glob("plans/{prefix}-*.plan.md")` or `Glob("plans/{prefix}-*.md")`
 
-Determine which plans to execute based on user's request:
+Store the list of plan files found.
 
-**If user said "test" or "auth" or similar prefix:**
+## EXECUTE NOW: Step 3 - Spawn Agent
 
-- Use Glob: `plans/{prefix}-*.md`
-- Sort by filename
-
-**If user provided specific plan names:**
-
-- For each name: if ends with `.md`, use as-is
-- Otherwise, use Glob to find matching plan in `plans/`
-
-**If no specific plans mentioned:**
-
-- Use Glob: `plans/*.md`
-- Exclude: `PROGRESS.md`, `example.md`
-
-## Step 3: Spawn Batch Orchestrator Agent
-
-**CRITICAL: You MUST spawn the plan-batch-orchestrator agent now using the Task tool.**
-
-This is NOT optional - the agent performs the actual batch execution work.
-
-Use the Task tool with these exact parameters:
+**You MUST immediately call the Task tool with these exact parameters:**
 
 ```
-Task tool parameters:
-  description: "Batch execute plans"
-  subagent_type: "planner:plan-batch-orchestrator"
-  prompt: |
-    arguments: [comma-separated plan list from Step 2, or prefix like "br-doc"]
+description: "Batch execute plans"
+subagent_type: "planner:plan-batch-orchestrator"
+prompt: |
+  arguments: [the prefix or comma-separated plan list from Step 2]
 
-    skip_questions: true
+  skip_questions: true
 
-    config:
-      auto_commit: [true/false from Step 1]
-      auto_commit_standard: [value from Step 1 or "no_standard"]
-      auto_update_claude_md: [true/false from Step 1]
-      replan_on_exec: [true/false from Step 1]
+  config:
+    auto_commit: [value from Step 1]
+    auto_commit_standard: [value from Step 1]
+    auto_update_claude_md: [value from Step 1]
+    replan_on_exec: [value from Step 1]
 
-    BEGIN ORCHESTRATION.
+  BEGIN ORCHESTRATION.
 ```
 
-**Important**: Do NOT just report what you found - you MUST call the Task tool to spawn the agent.
+**Call the Task tool NOW. Do not delay. Do not just describe what you would do.**
 
 ## Step 4: Report Results
 
-After the agent completes, report to the user:
+After the Task tool returns, report the execution summary to the user:
 
 ```
 ════════════════════════════════════════

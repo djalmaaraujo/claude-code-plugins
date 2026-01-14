@@ -3,6 +3,7 @@ name: planner-create
 description: Create implementation plan files with dependency analysis and parallel execution support. Breaks down complex features into multiple self-contained plans with proper dependency tracking. Use when user wants to create plans, break down features, or plan implementation.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Glob, Grep
 user-invocable: true
+context: fork
 ---
 
 # Create Plans

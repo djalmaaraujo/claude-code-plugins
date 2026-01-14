@@ -3,113 +3,76 @@ name: planner-exec
 description: Execute a single plan file with full dependency validation, configuration options (auto-commit, README update, CLAUDE.md update), conflict detection, and PROGRESS.md tracking. Blocks execution if dependencies are not met. Use when user wants to run a specific plan, execute a plan file, or implement a single plan.
 allowed-tools: Task, TaskOutput, Read, Glob, AskUserQuestion
 user-invocable: true
+context: fork
 ---
 
 # Execute Single Plan
 
-You are now executing the planner-exec skill. Follow these steps immediately:
+You will now execute the single plan workflow. Do NOT just report what you'll do - actually execute each step using the tools available.
 
-**Agent Reference**: This skill uses the plan-executor agent (@agents/plan-executor.md) to perform the actual plan execution work.
+## EXECUTE NOW: Step 1 - Find Plan File
 
-## Step 1: Find the Plan File
+Use the Glob tool NOW to find the plan file. Parse user's arguments to identify the plan name.
 
-Use Glob to locate the plan in `plans/` directory:
+- If partial name (e.g., "01"): `Glob("plans/*01*.plan.md")`
+- If full name: `Glob("plans/[name]")`
+- If multiple matches: Use AskUserQuestion to clarify
 
-**If user provides partial name (e.g., "01"):**
+## EXECUTE NOW: Step 2 - Read Plan
 
-- Search: `plans/*01*.md`
+Use the Read tool NOW to read the plan file found in Step 1.
 
-**If user provides full name (e.g., "auth-01-database.md"):**
+Extract:
+- The full plan content
+- The `depends_on` field from `# Configuration` section (if present)
 
-- Search: `plans/auth-01-database.md`
+## EXECUTE NOW: Step 3 - Check Dependencies
 
-**If multiple matches:**
+If `depends_on` exists in the plan:
 
-- Ask user which one they meant using AskUserQuestion
+1. Use Read tool to read `plans/PROGRESS.md`
+2. Check if each dependency has status `COMPLETED`
+3. If any dependency is NOT completed:
+   - Report: "⛔ BLOCKED: Dependency [name] is not COMPLETED"
+   - STOP execution immediately
 
-## Step 2: Read Plan Content
+## EXECUTE NOW: Step 4 - Read Config
 
-Read the plan file and extract:
+Use Read tool NOW to read `plans/planner.config.json`.
 
-1. The full plan content
-2. The `# Configuration` section
-3. The `depends_on` field (if present)
+Extract these values (use defaults if not found):
+- `auto_commit` (default: false)
+- `auto_commit_standard` (default: "no_standard")
+- `auto_update_claude_md` (default: false)
+- `replan_on_exec` (default: false)
 
-Example:
+## EXECUTE NOW: Step 5 - Spawn Agent
 
-```markdown
-# Configuration
-
-depends_on: "auth-00-setup.md"
-```
-
-## Step 3: Check Dependencies
-
-If `depends_on` exists, verify dependencies in `plans/PROGRESS.md`:
-
-1. Read `plans/PROGRESS.md`
-2. For each dependency listed:
-
-   - Find its status in the table
-   - If status is NOT `COMPLETED`:
-
-     ```
-     ⛔ BLOCKED: Cannot execute [plan_name]
-
-     Dependency [dep_name] is not COMPLETED
-     Current status: [status]
-
-     Please complete dependencies first, or use planner-batch for automatic ordering.
-     ```
-
-   - Exit immediately with BLOCKED status
-
-**IMPORTANT:** Do NOT proceed if dependencies are not met!
-
-## Step 4: Read Configuration
-
-Read the user's project configuration from `plans/planner.config.json`:
-
-1. **Read configuration file**: Read `plans/planner.config.json`
-
-   - If successful and valid JSON:
-     - Parse: `auto_commit`, `auto_commit_standard`, `auto_update_claude_md`, `replan_on_exec`
-     - Build config object and proceed to Step 5
-
-2. **Use defaults**: If file not found or invalid:
-   ```
-   config.auto_commit = false
-   config.auto_commit_standard = "no_standard"
-   config.auto_update_claude_md = false
-   config.replan_on_exec = false
-   ```
-
-## Step 5: Spawn Plan-Executor Agent
-
-Use the Task tool to spawn the plan-executor agent:
+**You MUST immediately call the Task tool with these exact parameters:**
 
 ```
-Task tool:
-  description: "Execute plan: [plan_name]"
-  subagent_type: "planner:plan-executor"
-  prompt: |
-    plan_name: "[actual plan filename]"
+description: "Execute plan: [plan_name]"
+subagent_type: "planner:plan-executor"
+prompt: |
+  plan_name: "[actual plan filename]"
 
-    plan_content: |
-      [FULL PLAN FILE CONTENT - properly indented]
+  plan_content: |
+    [FULL PLAN FILE CONTENT from Step 2]
 
-    skip_dependency_check: false
+  skip_dependency_check: true
 
-    config:
-      auto_commit: [true/false from Step 4]
-      auto_commit_standard: [value from Step 4 or "no_standard"]
-      auto_update_claude_md: [true/false from Step 4]
-      replan_on_exec: [true/false from Step 4]
+  config:
+    auto_commit: [value from Step 4]
+    auto_commit_standard: [value from Step 4]
+    auto_update_claude_md: [value from Step 4]
+    replan_on_exec: [value from Step 4]
 
-    additional_instructions: [user's extra instructions or "None"]
+  additional_instructions: [user's extra instructions or "None"]
 
-    BEGIN EXECUTION.
+  BEGIN EXECUTION.
 ```
+
+**Call the Task tool NOW. Do not delay. Do not just describe what you would do.**
 
 ## Step 6: Report Results
 
