@@ -168,15 +168,15 @@ Write the spec file to: `plans/[prefix]-spec.md`
 
 ### 6. Update PROGRESS.md
 
-Add the spec to `plans/PROGRESS.md`:
+Add the spec to `plans/PROGRESS.md` using this exact format:
 
 ```markdown
-### [Feature Name] Specification
-
-| Document | Status | Date |
-|----------|--------|------|
-| prefix-spec.md | DRAFT | YYYY-MM-DD |
+| Document       | Status | Date       | Progress |
+| -------------- | ------ | ---------- | -------- |
+| prefix-spec.md | DRAFT  | YYYY-MM-DD | 0%       |
 ```
+
+**Important**: Always include the Progress column set to `0%` for new specs.
 
 **Note**: Specs use a separate tracking from plans. Status values:
 - `DRAFT` - Initial creation

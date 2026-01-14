@@ -64,7 +64,7 @@ Available specs:
 
 ## Step 4: Find Existing Plans
 
-1. Use Glob: `plans/[prefix]-*.md` (exclude spec file)
+1. Use Glob: `plans/[prefix]-*.plan.md` (only plan files with .plan.md suffix)
 2. For each plan found:
    - Read plan content
    - Extract objective
@@ -79,9 +79,9 @@ Read `plans/planner.config.json`:
 
 ## Step 6: Detect Plan Template
 
-1. Check if `plans/task.TEMPLATE.md` exists
-   - If found: `template_source = "project"`, read content
-   - If not: `template_source = "default"`
+1. Check if `plans/plan.TEMPLATE.md` exists
+   - If found: `template_source = "project"`, read content using Read tool
+   - If not: Read plugin's default template `templates/plan.TEMPLATE.md`, `template_source = "default"`
 
 ## Step 7: Analyze Required Plans
 

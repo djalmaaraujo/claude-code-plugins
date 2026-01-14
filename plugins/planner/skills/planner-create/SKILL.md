@@ -31,12 +31,15 @@ Read the user's project configuration to understand the plan creation strategy:
 
 Check for a plan template to ensure consistent plan structure:
 
-1. **Check user's project first**: Use Glob to check if `plans/task.TEMPLATE.md` exists
-   - If found: Read and store as `template_content`
+1. **Check user's project first**: Use Glob to check if `plans/plan.TEMPLATE.md` exists
+
+   - If found: **Read the file** using Read tool and store as `template_content`
    - Set `template_source = "project"`
 
 2. **Fall back to plugin default**: If not found in project:
-   - The default template is built into the plan-creator agent
+
+   - Read the plugin's default template: `templates/plan.TEMPLATE.md` from plugin directory
+   - Store as `template_content`
    - Set `template_source = "default"`
 
 3. **Check for convention files**: Use Glob to check if `plans/standards/*.md` exists
@@ -44,6 +47,7 @@ Check for a plan template to ensure consistent plan structure:
    - If not found: Agent will use built-in conventions
 
 **Template affects plan structure:**
+
 - Plans will follow the template's section structure
 - Placeholders (`{{PLACEHOLDER}}`) guide content placement
 - Convention `@mentions` are preserved for reference
@@ -52,7 +56,7 @@ Check for a plan template to ensure consistent plan structure:
 
 Understand the current project structure:
 
-1. Use Glob: `plans/*.md` (exclude PROGRESS.md, example.md, task.TEMPLATE.md)
+1. Use Glob: `plans/*.plan.md` (only plan files, not specs or templates)
 2. Store as `existing_plans` for context
 3. Detect naming conventions:
    - Prefix patterns (e.g., "auth-", "api-")
@@ -112,15 +116,15 @@ Round 3: [plans depending on Round 2]
 ...
 
 Files created:
-- plans/[plan-01].md
-- plans/[plan-02].md
-- plans/[plan-03].md
+- plans/[plan-01].plan.md
+- plans/[plan-02].plan.md
+- plans/[plan-03].plan.md
 - Updated plans/PROGRESS.md
 
 To execute:
   /planner:batch --prefix=[prefix]
   OR
-  /planner:batch [plan-01].md [plan-02].md ...
+  /planner:batch [plan-01].plan.md [plan-02].plan.md ...
 
 Smart Parallelism: [enabled/disabled]
 ════════════════════════════════════════
@@ -163,17 +167,20 @@ When creating plans for a feature, this skill:
 
 The planner uses a template system for consistent plan creation:
 
-**Project Template** (`plans/task.TEMPLATE.md`):
+**Project Template** (`plans/plan.TEMPLATE.md`):
+
 - Custom template for your project
 - Created via `/planner:eject-template plan`
 - Takes priority over plugin default
 
 **Plugin Default Template**:
+
 - Built into the plan-creator agent
 - Used when no project template exists
 - Includes all standard sections
 
 **Convention Files** (`plans/standards/*.md`):
+
 - Referenced via `@templates/standards/[name].md`
 - Provide coding standards and best practices
 - Can be customized per project
@@ -218,12 +225,13 @@ depends_on: "prefix-00-setup.md"
 ## Implementation Steps
 
 ### Step 1: [Title]
+
 [Details]
 
 ## Files to Modify
 
 | File | Action | Description |
-|------|--------|-------------|
+| ---- | ------ | ----------- |
 
 ## Standards & Conventions
 
@@ -248,31 +256,31 @@ Step 1: Read smart_parallelism
 → Found: smart_parallelism: true
 
 Step 2: Detect template
-→ Found: plans/task.TEMPLATE.md (project custom)
+→ Found: plans/plan.TEMPLATE.md (project custom)
 → Found: plans/standards/*.md (8 convention files)
 
 Step 3: Analyze existing plans
-→ Found naming pattern: "feature-NN-name.md"
+→ Found naming pattern: "feature-NN-name.plan.md"
 → Detected numbering scheme: 00, 01, 02, etc.
 
 Step 4: Spawn plan-creator agent
 → Passes config, description, template, and conventions
 
 Agent creates:
-→ auth-00-setup.md (no deps)
-→ auth-01-database.md (depends on: 00)
-→ auth-02-jwt-service.md (depends on: 01)
-→ auth-03-api.md (depends on: 02)
-→ auth-04-tests.md (no deps - can run in parallel)
+→ auth-00-setup.plan.md (no deps)
+→ auth-01-database.plan.md (depends on: 00)
+→ auth-02-jwt-service.plan.md (depends on: 01)
+→ auth-03-api.plan.md (depends on: 02)
+→ auth-04-tests.plan.md (no deps - can run in parallel)
 
 Updates PROGRESS.md:
 → Added 5 new plans
 
 Report:
-→ Round 1: auth-00-setup.md, auth-04-tests.md
-→ Round 2: auth-01-database.md
-→ Round 3: auth-02-jwt-service.md
-→ Round 4: auth-03-api.md
+→ Round 1: auth-00-setup.plan.md, auth-04-tests.plan.md
+→ Round 2: auth-01-database.plan.md
+→ Round 3: auth-02-jwt-service.plan.md
+→ Round 4: auth-03-api.plan.md
 
 Suggested command: /planner:batch --prefix=auth
 ```

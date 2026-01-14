@@ -152,13 +152,15 @@ Add new plans to `plans/PROGRESS.md` using this format:
 ```markdown
 ### [Feature Name] Implementation
 
-| Plan                         | Status      | Date |
-| ---------------------------- | ----------- | ---- |
-| prefix-00-initial-setup.md   | NOT STARTED |      |
-| prefix-01-database-schema.md | NOT STARTED |      |
-| prefix-02-api-endpoints.md   | NOT STARTED |      |
-| prefix-03-unit-tests.md      | NOT STARTED |      |
+| Plan                              | Status      | Date |
+| --------------------------------- | ----------- | ---- |
+| prefix-00-initial-setup.plan.md   | NOT STARTED |      |
+| prefix-01-database-schema.plan.md | NOT STARTED |      |
+| prefix-02-api-endpoints.plan.md   | NOT STARTED |      |
+| prefix-03-unit-tests.plan.md      | NOT STARTED |      |
 ```
+
+**Important**: Always use `.plan.md` suffix in PROGRESS.md entries.
 
 ### 8. Report Structured Results
 
@@ -345,6 +347,33 @@ The table below shows typical dependency patterns. Apply these based on the `sma
 
 ---
 
+## Plan File Naming Convention
+
+**CRITICAL**: All plan files MUST use the `.plan.md` suffix to differentiate from spec files.
+
+**Format**: `prefix-NN-descriptive-name.plan.md`
+
+Where:
+- `prefix`: The feature/module prefix (e.g., `auth`, `checkout`, `brazilian-surfing-app`)
+- `NN`: Two-digit number (00, 01, 02, etc.)
+- `descriptive-name`: Kebab-case description of what the plan does
+- `.plan.md`: Fixed suffix for all plan files
+
+**Examples**:
+- `auth-00-setup.plan.md`
+- `auth-01-database-schema.plan.md`
+- `auth-02-jwt-service.plan.md`
+- `checkout-00-setup.plan.md`
+- `brazilian-surfing-app-01-setup.plan.md`
+
+**For Comparison**:
+- Specs use: `prefix-spec.md` (e.g., `auth-spec.md`)
+- Plans use: `prefix-NN-name.plan.md` (e.g., `auth-01-models.plan.md`)
+
+**ALWAYS use `.plan.md` suffix** - never use just `.md` for plan files.
+
+---
+
 ## Plan Size Guidelines
 
 - Each plan: ~40% context usage during execution
@@ -357,12 +386,13 @@ The table below shows typical dependency patterns. Apply these based on the `sma
 
 ## Rules
 
-1. **ALWAYS follow the template structure** - use project template or built-in default
-2. **ALWAYS create the # Configuration section** at the top of each plan
-3. **ALWAYS include @mentions to conventions** in Standards section
-4. **ALWAYS include testing instructions** with specific verification steps
-5. **ALWAYS update PROGRESS.md** with new plans
-6. **ALWAYS report structured results** using the format above
-7. **Maximize parallelism** - only add dependencies when truly needed
-8. **Keep plans self-contained** - they run with no memory of previous plans
-9. **Note extra sections** - if you add sections beyond the template, report them
+1. **ALWAYS use `.plan.md` suffix** - plan files MUST be named `prefix-NN-name.plan.md`
+2. **ALWAYS follow the template structure** - use project template or built-in default
+3. **ALWAYS create the # Configuration section** at the top of each plan
+4. **ALWAYS include @mentions to conventions** in Standards section
+5. **ALWAYS include testing instructions** with specific verification steps
+6. **ALWAYS update PROGRESS.md** with new plans (including `.plan.md` suffix)
+7. **ALWAYS report structured results** using the format above
+8. **Maximize parallelism** - only add dependencies when truly needed
+9. **Keep plans self-contained** - they run with no memory of previous plans
+10. **Note extra sections** - if you add sections beyond the template, report them

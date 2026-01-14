@@ -72,7 +72,7 @@ the planner in your project.
 ## Step 4: Check for Existing Template
 
 **If `template_type = "plan"`:**
-1. Check if `plans/task.TEMPLATE.md` already exists
+1. Check if `plans/plan.TEMPLATE.md` already exists
 2. If it exists, ask for confirmation to overwrite (or skip if user passed `--force`)
 
 **If `template_type = "spec"`:**
@@ -84,10 +84,10 @@ the planner in your project.
 **If `template_type = "plan"`:**
 
 1. Read the default template from the plugin:
-   - Path: Find the plugin root and read `templates/task.TEMPLATE.md`
+   - Path: Find the plugin root and read `templates/plan.TEMPLATE.md`
    - The plugin templates are located relative to this skill
 
-2. Write the template to `plans/task.TEMPLATE.md`
+2. Write the template to `plans/plan.TEMPLATE.md`
 
 3. Also copy the standards directory:
    - Create `plans/standards/` directory if it doesn't exist
@@ -113,7 +113,7 @@ the planner in your project.
 Plan Template Ejected Successfully
 
 Files created:
-  plans/task.TEMPLATE.md
+  plans/plan.TEMPLATE.md
   plans/standards/general-development.md
   plans/standards/error-handling.md
   plans/standards/validation.md
@@ -182,5 +182,5 @@ Customize these sections to fit your project's specification needs.
 
 | Type | Source File | Destination | Purpose |
 |------|-------------|-------------|---------|
-| plan | templates/task.TEMPLATE.md | plans/task.TEMPLATE.md | Customize plan creation |
+| plan | templates/plan.TEMPLATE.md | plans/plan.TEMPLATE.md | Customize plan creation |
 | spec | templates/spec.TEMPLATE.md | plans/spec.TEMPLATE.md | Customize spec creation |

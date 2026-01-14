@@ -132,11 +132,12 @@ From `plans/planner.config.json`:
 Check for a spec template to ensure consistent structure:
 
 1. **Check user's project first**: Use Glob to check if `plans/spec.TEMPLATE.md` exists
-   - If found: Read and store as `template_content`
+   - If found: **Read the file** using Read tool and store as `template_content`
    - Set `template_source = "project"`
 
 2. **Fall back to plugin default**: If not found in project:
-   - The default template is built into the spec-creator agent
+   - Read the plugin's default template: `templates/spec.TEMPLATE.md` from plugin directory
+   - Store as `template_content`
    - Set `template_source = "default"`
 
 ## Step 6: Find Existing Specs

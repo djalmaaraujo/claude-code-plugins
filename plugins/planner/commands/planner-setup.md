@@ -130,6 +130,8 @@ Only if `plans/PROGRESS.md` doesn't exist, write it:
 ```markdown
 # Project Progress
 
+Project Name: {{NAME_OF_THIS_PROJECT}}
+
 <!--
 PLANNER PROGRESS TRACKER
 This file tracks plan execution status.
@@ -137,7 +139,15 @@ This file tracks plan execution status.
 
 ---
 
-<!-- Plans will be added below -->
+## Specifications
+
+{{SPECIFICATIONS_WILL_BE_HERE}}
+
+---
+
+## Plans
+
+{{PLANS_WILL_BE_HERE}}
 ```
 
 ## Step 6: Report results

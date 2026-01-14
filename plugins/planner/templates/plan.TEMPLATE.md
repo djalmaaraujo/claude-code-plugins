@@ -8,11 +8,13 @@ All {{PLACEHOLDER}} values will be replaced by the plan-creator agent.
 depends_on: {{DEPENDENCIES}}
 <!--
   Dependencies that must be completed before this plan can execute.
-  Format: Comma-separated list of plan filenames (without .md extension)
+  Format: Comma-separated list of plan filenames (without .plan.md extension)
   Examples:
     depends_on: none
-    depends_on: 001-setup-database
-    depends_on: 001-setup-database, 002-create-models
+    depends_on: prefix-00-setup
+    depends_on: prefix-00-setup, prefix-01-models
+
+  Note: Plan files are named prefix-NN-name.plan.md
   The planner-exec skill will block execution if dependencies are not completed.
 -->
 
