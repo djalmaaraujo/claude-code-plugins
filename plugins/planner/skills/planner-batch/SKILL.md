@@ -3,11 +3,14 @@ name: planner-batch
 description: Execute multiple plans with automatic dependency resolution and parallel execution. Builds dependency graph, runs independent plans simultaneously, handles sequential dependencies, and applies configuration options. Use when user wants to run multiple plans, batch execute plans, or execute all plans for a feature.
 allowed-tools: Task, TaskOutput, Read, Glob, Grep, AskUserQuestion
 user-invocable: true
+agent: plan-batch-orchestrator
 ---
 
 # Execute Batch Plans
 
 You are now executing the planner-batch skill. Follow these steps immediately:
+
+**Agent Reference**: This skill uses the plan-batch-orchestrator agent (@agents/plan-batch-orchestrator.md) to perform the actual batch execution orchestration work.
 
 ## Step 1: Read Configuration
 
@@ -48,14 +51,20 @@ Determine which plans to execute based on user's request:
 
 ## Step 3: Spawn Batch Orchestrator Agent
 
-Use the Task tool to spawn the plan-batch-orchestrator agent:
+**CRITICAL: You MUST spawn the plan-batch-orchestrator agent now using the Task tool.**
+
+This is NOT optional - the agent performs the actual batch execution work.
+
+Use the Task tool with these exact parameters:
 
 ```
-Task tool:
+Task tool parameters:
   description: "Batch execute plans"
   subagent_type: "planner:plan-batch-orchestrator"
   prompt: |
-    arguments: "[comma-separated plan list or prefix]"
+    arguments: [comma-separated plan list from Step 2, or prefix like "br-doc"]
+
+    skip_questions: true
 
     config:
       auto_commit: [true/false from Step 1]
@@ -65,6 +74,8 @@ Task tool:
 
     BEGIN ORCHESTRATION.
 ```
+
+**Important**: Do NOT just report what you found - you MUST call the Task tool to spawn the agent.
 
 ## Step 4: Report Results
 

@@ -10,6 +10,8 @@ You are a specialized agent for executing multiple plans with dependency resolut
 
 **Note**: This agent is spawned by the `planner-batch` skill. See that skill for full context and orchestration logic.
 
+**CRITICAL**: When you are spawned, you MUST immediately begin the orchestration flow described below. Do NOT just report what you found - actually execute the plans by spawning plan-executor agents.
+
 ## Context You Receive
 
 When spawned, you receive:
@@ -34,13 +36,15 @@ The planner-batch skill already asked configuration questions.
 
 ## Orchestration Flow
 
-### Step 1: Resolve Plan List
+**IMMEDIATELY begin orchestration when spawned. Follow these steps in order:**
+
+### FIRST: Resolve Plan List
 
 Parse the `arguments` for plan sources:
 
-If `--prefix=name` is in arguments:
+If `--prefix=name` is in arguments or arguments looks like "br-doc" or similar:
 
-- Use Glob to find all `plans/name-*.md` files
+- Use Glob to find all `plans/{prefix}-*.plan.md` files (e.g., `plans/br-doc-*.plan.md`)
 - Sort by filename (numeric ordering)
 
 Otherwise:
@@ -49,7 +53,7 @@ Otherwise:
 
 ---
 
-## THIRD: Read All Plan Files
+## SECOND: Read All Plan Files
 
 For each plan:
 
@@ -76,7 +80,7 @@ depends_on: "00-setup.md"
 
 ---
 
-## FOURTH: Check PROGRESS.md for Already-Completed Plans
+## THIRD: Check PROGRESS.md for Already-Completed Plans
 
 For each plan:
 
@@ -86,7 +90,7 @@ For each plan:
 
 ---
 
-## FIFTH: Build Execution Groups
+## FOURTH: Build Execution Groups
 
 Organize plans into execution rounds:
 
@@ -99,7 +103,7 @@ Round 3: Plans whose dependencies completed in Round 2
 
 ---
 
-## SIXTH: Execute Plans Using Plan-Executor Agent
+## FIFTH: Execute Plans Using Plan-Executor Agent
 
 For each execution round, spawn plan-executor sub-agents using the registered agent type:
 
@@ -140,7 +144,7 @@ Task tool parameters:
 
 ---
 
-## SEVENTH: Collect Results
+## SIXTH: Collect Results
 
 After each round:
 
@@ -153,13 +157,13 @@ After each round:
 
 ---
 
-## EIGHTH: Continue to Next Round
+## SEVENTH: Continue to Next Round
 
-Repeat SIXTH-SEVENTH until all plans are processed.
+Repeat FIFTH-SIXTH until all plans are processed.
 
 ---
 
-## NINTH: Final Summary
+## EIGHTH: Final Summary
 
 ```
 ════════════════════════════════════════
@@ -177,10 +181,11 @@ Parallel groups executed: N
 
 ## Rules
 
-1. **ALWAYS ask configuration questions FIRST** (unless skip_questions is true)
+1. **Configuration questions are already handled** by the planner-batch skill - the `config` object is provided to you, DO NOT ask questions again
 2. **NEVER start a dependent plan** until its dependencies are COMPLETED
 3. **ALWAYS spawn independent plans in parallel** (single message, multiple Task calls)
 4. **ALWAYS verify** completion via TaskOutput before next round
 5. **Use background execution** (`run_in_background: true`) for parallel plans
 6. **Handle failures gracefully** - ask user before skipping dependent plans
 7. **Use plan-executor agent** for consistent execution behavior
+8. **IMMEDIATELY begin orchestration** - read plans, build dependency graph, and execute in rounds

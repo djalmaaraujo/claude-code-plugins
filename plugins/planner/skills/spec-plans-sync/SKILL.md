@@ -3,11 +3,18 @@ name: spec-plans-sync
 description: Synchronize plans from a spec file. Reads the spec, generates or updates related plans, marks deprecated plans, and updates the spec's Milestones section. Use when user changes a spec and wants to regenerate plans.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Glob, Grep, AskUserQuestion
 user-invocable: true
+agent: plan-creator
 ---
 
 # Sync Plans from Spec
 
 You are now executing the spec-plans-sync skill. Follow these steps immediately:
+
+**Agent Reference**: This skill uses the plan-creator agent (@agents/plan-creator.md) to generate plans from the spec.
+
+**Template Reference**: The default plan template is available at @templates/plan.TEMPLATE.md
+
+**Standards Reference**: Convention files are available at @templates/standards/
 
 ## Step 1: Parse Arguments and Get Prefix
 
@@ -106,10 +113,14 @@ multiSelect: false
 
 ## Step 8: Spawn Plan-Creator Agent
 
-Use the Task tool to spawn the plan-creator agent for new/updated plans:
+**CRITICAL: You MUST spawn the plan-creator agent now using the Task tool.**
+
+This is NOT optional - the agent performs the actual plan creation work.
+
+Use the Task tool with these exact parameters:
 
 ```
-Task tool:
+Task tool parameters:
   description: "Generate plans from spec: [prefix]"
   subagent_type: "planner:plan-creator"
   prompt: |
@@ -142,6 +153,8 @@ Task tool:
 
     BEGIN PLAN CREATION.
 ```
+
+**Important**: Do NOT just analyze the spec - you MUST call the Task tool to spawn the agent.
 
 ## Step 9: Handle Deprecated Plans
 

@@ -3,11 +3,16 @@ name: spec-create
 description: Create a comprehensive specification file with deep codebase analysis. Generates detailed requirements, technical designs, and implementation logistics. The spec serves as the source of truth for related plans.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 user-invocable: true
+agent: spec-creator
 ---
 
 # Create Spec
 
 You are now executing the spec-create skill. Follow these steps immediately:
+
+**Agent Reference**: This skill uses the spec-creator agent (@agents/spec-creator.md) to perform the actual spec creation work.
+
+**Template Reference**: The default spec template is available at @templates/spec.TEMPLATE.md
 
 ## Step 0: Check Spec Configuration
 
@@ -148,10 +153,14 @@ Check for a spec template to ensure consistent structure:
 
 ## Step 7: Spawn Spec-Creator Agent
 
-Use the Task tool to spawn the spec-creator agent:
+**CRITICAL: You MUST spawn the spec-creator agent now using the Task tool.**
+
+This is NOT optional - the agent performs the actual spec creation work.
+
+Use the Task tool with these exact parameters:
 
 ```
-Task tool:
+Task tool parameters:
   description: "Create spec for: [short summary]"
   subagent_type: "planner:spec-creator"
   prompt: |
@@ -184,6 +193,8 @@ Task tool:
 
     BEGIN SPEC CREATION.
 ```
+
+**Important**: Do NOT just gather information - you MUST call the Task tool to spawn the agent.
 
 ## Step 8: Report Results
 

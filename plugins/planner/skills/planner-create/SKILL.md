@@ -3,11 +3,18 @@ name: planner-create
 description: Create implementation plan files with dependency analysis and parallel execution support. Breaks down complex features into multiple self-contained plans with proper dependency tracking. Use when user wants to create plans, break down features, or plan implementation.
 allowed-tools: Task, TaskOutput, Read, Write, Edit, Glob, Grep
 user-invocable: true
+agent: plan-creator
 ---
 
 # Create Plans
 
 You are now executing the planner-create skill. Follow these steps immediately:
+
+**Agent Reference**: This skill uses the plan-creator agent (@agents/plan-creator.md) to perform the actual plan creation work.
+
+**Template Reference**: The default plan template is available at @templates/plan.TEMPLATE.md
+
+**Standards Reference**: Convention files are available at @templates/standards/
 
 ## Step 1: Read Smart Parallelism Configuration
 
@@ -65,10 +72,14 @@ Understand the current project structure:
 
 ## Step 4: Spawn Plan-Creator Agent
 
-Use the Task tool to spawn the plan-creator agent:
+**CRITICAL: You MUST spawn the plan-creator agent now using the Task tool.**
+
+This is NOT optional - the agent performs the actual plan creation work.
+
+Use the Task tool with these exact parameters:
 
 ```
-Task tool:
+Task tool parameters:
   description: "Create plans for: [short summary]"
   subagent_type: "planner:plan-creator"
   prompt: |
@@ -95,6 +106,8 @@ Task tool:
 
     BEGIN CREATION.
 ```
+
+**Important**: Do NOT just gather information - you MUST call the Task tool to spawn the agent.
 
 ## Step 5: Report Results
 
