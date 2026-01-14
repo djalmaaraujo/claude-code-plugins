@@ -147,18 +147,32 @@ Select only the conventions relevant to each specific plan.
 
 ### 7. Update PROGRESS.md
 
-Add new plans to `plans/PROGRESS.md` using this format:
+Add new plans to `plans/PROGRESS.md` using ONLY this exact format:
 
 ```markdown
 ### [Feature Name] Implementation
 
-| Plan                              | Status      | Date |
-| --------------------------------- | ----------- | ---- |
-| prefix-00-initial-setup.plan.md   | NOT STARTED |      |
-| prefix-01-database-schema.plan.md | NOT STARTED |      |
-| prefix-02-api-endpoints.plan.md   | NOT STARTED |      |
-| prefix-03-unit-tests.plan.md      | NOT STARTED |      |
+| Plan                              | Status      | Date       |
+| --------------------------------- | ----------- | ---------- |
+| prefix-00-initial-setup.plan.md   | NOT STARTED | YYYY-MM-DD |
+| prefix-01-database-schema.plan.md | NOT STARTED | YYYY-MM-DD |
+| prefix-02-api-endpoints.plan.md   | NOT STARTED | YYYY-MM-DD |
+| prefix-03-unit-tests.plan.md      | NOT STARTED | YYYY-MM-DD |
 ```
+
+**CRITICAL - What NOT to Add to PROGRESS.md:**
+
+Do NOT add any of these sections to PROGRESS.md:
+- `**Progress**: ░░░░░░░░░░░░ X/Y plans completed` (progress bars)
+- `### Execution Order` section (with numbered list)
+- `### Quick Commands` section (with /planner:batch or /planner:exec examples)
+- `Check status:` commands
+
+The PROGRESS.md table should ONLY contain:
+1. A section header `### [Feature Name] Implementation`
+2. A simple markdown table with columns: Plan | Status | Date
+
+That's all. Nothing else should be added to PROGRESS.md by this agent.
 
 **Important**: Always use `.plan.md` suffix in PROGRESS.md entries.
 
@@ -392,7 +406,11 @@ Where:
 4. **ALWAYS include @mentions to conventions** in Standards section
 5. **ALWAYS include testing instructions** with specific verification steps
 6. **ALWAYS update PROGRESS.md** with new plans (including `.plan.md` suffix)
+   - **ONLY the table** - no progress bars, execution order, or quick commands
+   - Section header `### [Feature Name] Implementation`
+   - Table with: Plan | Status | Date columns
 7. **ALWAYS report structured results** using the format above
 8. **Maximize parallelism** - only add dependencies when truly needed
 9. **Keep plans self-contained** - they run with no memory of previous plans
 10. **Note extra sections** - if you add sections beyond the template, report them
+11. **NEVER add extra sections to PROGRESS.md** - only the table, nothing more
